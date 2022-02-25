@@ -1,0 +1,133 @@
+///////////////////////////////
+// THEME / COMPONENTS / BUTTONS
+///////////////////////////////
+
+
+
+.theme .dcf-btn {
+  text-decoration: none;
+  transition: all $transition-duration-hover-off $transition-timing-fn-hover-off;
+}
+
+
+.theme .dcf-btn:hover {
+  transition: all $transition-duration-hover-on $transition-timing-fn-hover-on;
+}
+
+
+.theme .dcf-btn:focus {
+  outline: 3px solid transparent; // https://sarahmhigley.com/writing/whcm-quick-tips/
+  transition: box-shadow $transition-duration-hover-on $transition-timing-fn-hover-on;
+}
+
+
+// Visited
+
+.theme a.dcf-btn-primary:visited {
+  color: $color-button-primary;
+}
+
+
+.theme a.dcf-btn-secondary:visited {
+  color: $color-button-secondary;
+}
+
+
+.theme a.dcf-btn-tertiary:visited {
+  color: $color-button-tertiary;
+}
+
+
+.theme a.dcf-btn-inverse-primary:visited {
+  color: $color-button-inverse-primary;
+}
+
+
+.theme a.dcf-btn-inverse-secondary:visited {
+  color: $color-button-inverse-secondary;
+}
+
+
+.theme a.dcf-btn-inverse-tertiary:visited {
+  color: $color-button-inverse-tertiary;
+}
+
+
+// Hover (and Active)
+
+.theme .dcf-btn-primary:not(:disabled):hover,
+.theme .dcf-btn-primary:not(:disabled):active {
+  background-color: $bg-color-button-primary-hover;
+  border-color: $border-color-button-primary-hover;
+}
+
+.theme .dcf-btn-secondary:not(:disabled):hover,
+.theme .dcf-btn-secondary:not(:disabled):active,
+.theme .dcf-btn-tertiary:not(:disabled):hover,
+.theme .dcf-btn-tertiary:not(:disabled):active {
+  background-color: $bg-color-button-secondary-tertiary-hover;
+  color: $color-button-secondary-tertiary-hover;
+}
+
+
+.theme .dcf-btn-inverse-primary:not(:disabled):hover,
+.theme .dcf-btn-inverse-primary:not(:disabled):active {
+  background-color: $bg-color-button-inverse-primary-hover;
+  border-color: $border-color-button-inverse-primary-hover;
+}
+
+
+.theme .dcf-btn-inverse-secondary:not(:disabled):hover,
+.theme .dcf-btn-inverse-secondary:not(:disabled):active,
+.theme .dcf-btn-inverse-tertiary:not(:disabled):hover,
+.theme .dcf-btn-inverse-tertiary:not(:disabled):active {
+  background-color: $bg-color-button-inverse-secondary-tertiary-hover;
+  color: $color-button-inverse-secondary-tertiary-hover;
+}
+
+
+// Focus
+.theme .dcf-btn:focus {
+  transition: box-shadow $transition-duration-hover-on $transition-timing-fn-hover-on;
+}
+
+
+.theme .dcf-btn-primary:focus,
+.theme .dcf-btn-secondary:focus,
+.theme .dcf-btn-tertiary:focus {
+  box-shadow: 0 0 0 3px $bg-color-body, 0 0 0 5px $border-color-input-focus;
+}
+
+
+.theme .dcf-btn-inverse-primary:focus {
+  box-shadow: 0 0 0 3px $border-color-input-focus, 0 0 0 5px $bg-color-button-inverse-primary;
+}
+
+
+.theme .dcf-btn-inverse-secondary:focus,
+.theme .dcf-btn-inverse-tertiary:focus {
+  box-shadow: 0 0 0 3px $border-color-input-focus, 0 0 0 5px currentColor;
+}
+
+
+// Active
+.theme .dcf-btn-primary:active {
+  box-shadow: 0 0 0 3px $bg-color-body, 0 0 0 5px $border-color-button-primary-hover;
+}
+
+
+.theme .dcf-btn-secondary:active,
+.theme .dcf-btn-tertiary:active {
+  box-shadow: 0 0 0 3px $bg-color-body, 0 0 0 5px currentColor;
+}
+
+
+.theme .dcf-btn-inverse-primary:active {
+  box-shadow: 0 0 0 3px $color-hover-light-mode, 0 0 0 5px $bg-color-button-inverse-primary;
+}
+
+
+.theme .dcf-btn-inverse-secondary:active,
+.theme .dcf-btn-inverse-tertiary:active {
+  box-shadow: 0 0 0 3px $color-hover-light-mode, 0 0 0 5px currentColor;
+}

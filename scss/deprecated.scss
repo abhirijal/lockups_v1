@@ -1,0 +1,21 @@
+/////////////
+// DEPRECATED
+/////////////
+
+
+// Mixins
+@import '../node_modules/dcf/scss/mixins/*';
+@import 'mixins/*';
+
+// Variables
+@import '../node_modules/dcf/scss/variables/*';
+@import 'variables/*';
+
+
+// Functions
+@import '../node_modules/dcf/scss/functions/*';
+
+
+// Deprecated
+@import '../node_modules/dcf/scss/deprecated/*';
+@import '/deprecated/*';

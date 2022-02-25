@@ -1,0 +1,67 @@
+{% block body %}
+<div class="dcf-wrapper dcf-bleed dcf-pt-7 dcf-pb-7 unl-bg-cream">
+    <h3>Manage your lockups</h3>
+    <table class="dcf-table dcf-table-bordered dcf-table-striped dcf-w-100%">
+        <tr>
+            <th>
+                Title
+            </th>
+            <th>
+                Preview
+            </th>
+            <th>
+                Approver
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+        <!-- <tr>
+            <td>
+                TEST
+            </td>
+            <td>
+                <img style="width: 250px; height: auto;" src="/img/org1.png" alt="">
+            </td>
+            <td>
+                University of Nebraska-Lincoln
+            </td>
+            <td>
+                <strong>Communicator</strong>: Awaiting Approval<br>
+                <strong>Creative</strong>: Awaiting Approval
+            </td>
+            <td>
+                <a href="/lockups/edit/1"><button class="dcf-button dcf-btn-secondary">View</button></a> <button
+                    class="dcf-button dcf-btn-primary">Delete</button>
+            </td>
+        </tr> -->
+        {% for item in lockups_array%}
+        <tr>
+            <td>
+                {{item.getOrgFirstLine}}
+            </td>
+            <td>
+                <img style="width: 250px; height: auto;" src="/img/org1.png" alt="">
+            </td>
+            <td>
+                University of Nebraska-Lincoln
+            </td>
+            <td>
+                <strong>Communicator</strong>: Awaiting Approval<br>
+                <strong>Creative</strong>: Awaiting Approval
+            </td>
+            <td>
+                <a href="/lockups/edit/{{item.getId}}"><button class="dcf-button dcf-btn-secondary">View</button></a>
+                <form action="/lockups/delete/" method="POST" style="display: inline;">
+                    <button type="submit" class="dcf-btn dcf-btn-primary">Delete</button>
+                    <input type="hidden" name="id" value="{{item.getId}}">
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

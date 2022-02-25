@@ -1,0 +1,15 @@
+/////////////////////////////
+// THEME / ELEMENTS / ANCHORS
+/////////////////////////////
+
+
+// Link
+.theme a:link {
+  transition: color $transition-duration-hover-off $transition-timing-fn-hover-off;
+}
+
+
+// Hover
+.theme a:hover {
+  transition: color $transition-duration-hover-on $transition-timing-fn-hover-on;
+}
