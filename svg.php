@@ -1,13 +1,4 @@
-<!-- slowly doing alright. todays Monday and came directly from her house. yesterday was her roommate's birthday part and it was fun. Also made my brief resume and applied
-to a python on-campus job. I hope I get it I love python :')))). besides that, nothing else is going on right now. I have to do the math and 310 homeworks and also study for
-the tests. 
-
-updated goals:
-- study and finzalise academics
-- find and apply to universities
-- study for exams and tests
-- create resumes and websites
-- apply for internships too
+<!-- 
 
 -->
 <?php

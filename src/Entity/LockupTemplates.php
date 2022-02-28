@@ -43,11 +43,17 @@ class LockupTemplates
     #[ORM\Column(type: 'integer', nullable: true)]
     private $acronym_second_line;
 
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private $acronym_subject;
+
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $description;
 
     #[ORM\Column(type: 'integer', nullable: true)]
     private $links_to;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private $extension;
 
     public function getId(): ?int
     {
@@ -174,6 +180,18 @@ class LockupTemplates
         return $this;
     }
 
+    public function getAcronymSubject(): ?int
+    {
+        return $this->acronym_subject;
+    }
+
+    public function setAcronymSubject(?int $acronym_subject): self
+    {
+        $this->acronym_subject = $acronym_subject;
+
+        return $this;
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -194,6 +212,18 @@ class LockupTemplates
     public function setLinksTo(?int $links_to): self
     {
         $this->links_to = $links_to;
+
+        return $this;
+    }
+
+    public function getExtension(): ?int
+    {
+        return $this->extension;
+    }
+
+    public function setExtension(?int $extension): self
+    {
+        $this->extension = $extension;
 
         return $this;
     }
