@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Lockups;
+use App\Entity\LockupTemplates;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -21,11 +22,13 @@ class IndexController extends AbstractController
     /**
      * @Route("/", name="homePage", methods={"GET"})
      */
-    public function homePage(): Response
+    public function homePage(ManagerRegistry $doctrine): Response
     {
+        $lockups = $doctrine->getRepository(LockupTemplates::class)->findAll();
         return $this->render('base.html.twig', [
             'page_template' => "createLockups.html.twig",
-            'page_name' => "CreateLockups"
+            'page_name' => "CreateLockups",
+            'lockups' => $lockups
             // this array defines the variables passed to the template,
             // where the key is the variable name and the value is the variable value
             // (Twig recommends using snake_case variable names: 'foo_bar' instead of 'fooBar')
