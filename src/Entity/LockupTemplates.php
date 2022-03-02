@@ -46,7 +46,7 @@ class LockupTemplates
     #[ORM\Column(type: 'integer', nullable: true)]
     private $acronym_subject;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
     private $description;
 
     #[ORM\Column(type: 'integer', nullable: true)]

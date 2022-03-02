@@ -1,15 +1,22 @@
 <?php
-// src/Controller/LuckyController.php
+// src/Controller/indexController.php
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Lockups;
 use App\Entity\LockupTemplates;
+use App\Entity\LockupTemplatesFields;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+
+use Symfony\Component\Serializer\Serializer;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,13 +32,19 @@ class IndexController extends AbstractController
     public function homePage(ManagerRegistry $doctrine): Response
     {
         $lockups = $doctrine->getRepository(LockupTemplates::class)->findAll();
+        $lockups_fields = $doctrine->getRepository(LockupTemplatesFields::class)->findAll();
+
+        $encoders = [new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers, $encoders);
+        $jsonContent = $serializer->serialize($lockups_fields, 'json', [AbstractNormalizer::ATTRIBUTES => ['slug', 'Uppercase', 'Value']]);
+
         return $this->render('base.html.twig', [
             'page_template' => "createLockups.html.twig",
             'page_name' => "CreateLockups",
-            'lockups' => $lockups
-            // this array defines the variables passed to the template,
-            // where the key is the variable name and the value is the variable value
-            // (Twig recommends using snake_case variable names: 'foo_bar' instead of 'fooBar')
+            'lockups' => $lockups,
+            'lockups_fields' => $lockups_fields,
+            'json_lockups_fields'=> $jsonContent
         ]);
     }
 
@@ -43,24 +56,25 @@ class IndexController extends AbstractController
         $entityManager = $doctrine->getManager();
 
         $lockuptemplate = $request->request->get('lockuptemplate');
-        $org_first_line = $request->request->get('inputtxt');
-        $org_second_line = $request->request->get('inputtxt2');
+        $org_first_line = $request->request->get('org_first_line');
+        $org_second_line = $request->request->get('org_second_line');
         $approver = $request->request->get('approver');
         $lockups = new Lockups();
-        
-        $lockups-> setApprover($approver);
-        $lockups-> setOrgFirstLine($org_first_line);
-        $lockups-> setTemplateId($lockuptemplate);
-        $lockups-> setStatus(0);
-        $lockups-> setUser(0);
+
+        if ($approver == "") {
+            $approver = 1;
+        }
+
+        $lockups->setApprover($approver);
+        $lockups->setOrgFirstLine($org_first_line);
+        $lockups->setTemplateId($lockuptemplate);
+        $lockups->setStatus(0);
+        $lockups->setUser(0);
         $errors = $validator->validate($lockups);
         if (count($errors) > 0) {
             return $this->render('base.html.twig', [
                 'page_template' => "createLockups.html.twig",
                 'page_name' => "CreateLockups"
-                // this array defines the variables passed to the template,
-                // where the key is the variable name and the value is the variable value
-                // (Twig recommends using snake_case variable names: 'foo_bar' instead of 'fooBar')
             ]);
         }
         $entityManager->persist($lockups);
@@ -89,13 +103,10 @@ class IndexController extends AbstractController
             'page_template' => "manageLockups.html.twig",
             'page_name' => "ManageLockups",
             'lockups_array' => $product
-            // this array defines the variables passed to the template,
-            // where the key is the variable name and the value is the variable value
-            // (Twig recommends using snake_case variable names: 'foo_bar' instead of 'fooBar')
         ]);
     }
 
-        /**
+    /**
      * @Route("/lockups/delete/", name="deleteLockups", methods={"POST"})
      */
     public function deleteLockups(ManagerRegistry $doctrine, Request $request): RedirectResponse
@@ -109,7 +120,7 @@ class IndexController extends AbstractController
 
         return $this->redirectToRoute('manageLockups', [], 302);
     }
-        /**
+    /**
      * @Route("/lockups/edit/{id}", name="editLockups")
      */
     public function editLockups(int $id): Response
@@ -118,9 +129,6 @@ class IndexController extends AbstractController
         return $this->render('base.html.twig', [
             'page_template' => "editLockups.html.twig",
             'page_name' => "ManageLockups"
-            // this array defines the variables passed to the template,
-            // where the key is the variable name and the value is the variable value
-            // (Twig recommends using snake_case variable names: 'foo_bar' instead of 'fooBar')
         ]);
     }
     /**
@@ -130,9 +138,6 @@ class IndexController extends AbstractController
     {
         return $this->render('base.html.twig', [
             'page_name' => "LockupsLibrary"
-            // this array defines the variables passed to the template,
-            // where the key is the variable name and the value is the variable value
-            // (Twig recommends using snake_case variable names: 'foo_bar' instead of 'fooBar')
         ]);
     }
 }
