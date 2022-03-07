@@ -8,6 +8,12 @@
                 <button id="horizontal-button" class="nav-link active unl-bg-scarlet"
                     aria-current="page">Horizontal</button>
                 <button id="vertical-button" class="nav-link unl-darker-gray">Vertical</button>
+                <select id="category_list" name="category_list"
+                    class="dcf-input-select dcf-b-1 dcf-b-solid dcf-rounded dcf-mt-2">
+                    {% for item in categories %}
+                    <option value="{{item.getSlug}}">{{item.getName}}</option>
+                    {% endfor %}
+                </select>
             </nav>
             <div style="height: 60vh; overflow-y: auto;">
                 <div id="horizontal-tab">
@@ -17,9 +23,9 @@
                     </div>-->
                     {% for item in lockups %}
                     {% if item.getStyle == "h" %}
-                    <div class="dcf-p-3 dcf-mt-3 dcf-mb-3 dcf-relative lockup-templates">
+                    <div class="dcf-p-3 dcf-mt-3 dcf-mb-3 dcf-relative lockup-templates {{item.getCategory.getSlug}}" style="display: none;" value="{{item.getCategory.getSlug}}">
                         <img style="width: 400px; height: auto;" src="{{item.getImage}}" alt="{{item.getName}}">
-                        <div id="{{item.getStyle}}{{item.getId}}" class="dcf-absolute img-thumb {{ (item.getId == 1) ? "
+                        <div id="{{item.getId}}" class="dcf-absolute img-thumb {{ (item.getId == 1) ? "
                             img-thumb-active"}}">
                         </div>
                     </div>
@@ -29,9 +35,9 @@
                 <div id="vertical-tab" style="display: none;">
                     {% for item in lockups %}
                     {% if item.getStyle == "v" %}
-                    <div class="dcf-p-3 dcf-mt-3 dcf-mb-3 dcf-relative lockup-templates">
+                    <div class="dcf-p-3 dcf-mt-3 dcf-mb-3 dcf-relative lockup-templates {{item.getCategory.getSlug}}" style="display: none;" value="{{item.getCategory.getSlug}}">
                         <img style="width: 400px; height: auto;" src="{{item.getImage}}" alt="{{item.getName}}">
-                        <div id="{{item.getStyle}}{{item.getId}}" class="dcf-absolute img-thumb">
+                        <div id="{{item.getId}}" class="dcf-absolute img-thumb">
                         </div>
                     </div>
                     {% endif %}
@@ -43,43 +49,56 @@
             <h5 class="dcf-mb-6">Preview</h5>
             <div>
                 {% for item in lockups %}
-                <div id="{{item.getStyle}}{{item.getId}}svg" style="display:{{ (item.getId == 1) ? " block" : "none" }}"
-                    class="svgTabs">
-                    <div class="dcf-txt-center">
+                {% if item.getLinksTo != null%}
+                <div id="{{item.getId}}svg" style="display:{{ (item.getId == 1) ? " block" : "none" }}"
+                class="svgTabs">
+                <div class="dcf-grid dcf-grid-halves">                            
+                    <div class="d-flex flex-column dcf-mr-6" style="background-color: #fff; border-radius: 8px;">
+                        <div>
+                            <h6>{{(item.getStyle == "h") ? "Horizontal" : "Vertical"}} </h6>
+                        </div>
+                        <div class="dcf-txt-center align-self-center w-100">
+                            {{item.getSvg | raw}}
+                        </div>
+                    </div>
+                    <div class="d-flex" style="background-color: #fff;">
+                        <div class="dcf-flex-col align-self-center dcf-txt-center w-100">
+                            {% for subitem in lockups %}
+                            {% if(subitem.getId == item.getLinksTo) %}
+                            <h6>{{(subitem.getStyle == "h") ? "Horizontal" : "Vertical"}}</h6>
+                            {{ subitem.getSvg | raw }}
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <p class="dcf-mt-5 dcf-txt-3xs"> <i class="dxf-txt-left">{{item.getDescription}}</i></p>
+            </div>
+                {% else %}
+                <div id="{{item.getId}}svg" style="display:{{ (item.getId == 1) ? " block" : "none" }}"
+                class="svgTabs">
+                <div class="dcf-txt-center">
                     {{item.getSvg | raw}}
                 </div>
-                    <p class="dcf-mt-5 dcf-txt-3xs"> <i class="dxf-txt-left">{{item.getDescription}}</i></p>
+                <p class="dcf-mt-5 dcf-txt-3xs"> <i class="dxf-txt-left">{{item.getDescription}}</i></p>
             </div>
-                    {% endfor %}
-                </div>
+            {% endif %}
+                {% endfor %}
+            </div>
             <form method="POST" action="/">
                 <!--  name stores the post form data -->
                 <input type="hidden" id="lockupTemplateId" name="lockuptemplate" value="1">
                 <div class="dcf-mt-6">
                     {% for item in lockups_fields %}
-                    <div id="{{ item.getSlug }}" class="dcf-mb-3 input_field_class" style="display: {{(item.getId == 1) ? "block" : "none"}};">
+                    <div id="{{ item.getSlug }}" class="dcf-mb-3 input_field_class"
+                        style="display: {{(item.getId == 1) ? " block" : "none" }};">
                         <label for="exampleFormControlInput1" class="form-label">{{ item.getName }}</label>
-                        <input type="text" class="dcf-input-text dcf-w-100%" name="{{ item.getSlug }}" maxlength="{{ item.getLength }}"
-                            value="{{item.getValue}}" placeholder="Organization" {{(item.getUppercase == 1) ? "style=\"text-transform:uppercase\""}}>
+                        <input type="text" class="dcf-input-text dcf-w-100%" name="{{ item.getSlug }}"
+                            maxlength="{{ item.getLength }}" placeholder="{{item.getValue}}" placeholder="Organization"
+                            {{(item.getUppercase==1) ? "style=\" text-transform:uppercase\""}}>
                         <p style="font-size: .8em;font-style: italic;">Maximum {{ item.getLength }} characters.</p>
                     </div>
                     {% endfor %}
-                    <!-- <div id="org_second_line" class="dcf-mb-3 input_field_class" style="display: none;">
-                        <label for="exampleFormControlInput2" class="form-label">Organization Name Second Line</label>
-                        <input type="text" class="dcf-input-text dcf-w-100%" name="org_second_line"
-                            value="Organization Second Line" placeholder="SecondLineOrganization" maxlength="31">
-                        <p style="font-size: .8em;font-style: italic;">Maximum 31 characters.</p>
-                    </div>
-                    <div id="subject_first_line" class="dcf-mb-3 input_field_class" style="display: none;">
-                        <label for="exampleFormControlInput2" class="form-label">Subject First Line</label>
-                        <input type="text" class="dcf-input-text dcf-w-100%" name="subject_first_line"
-                            value="Organization Second Line" placeholder="SecondLineOrganization">
-                    </div>
-                    <div id="subject_second_line" class="dcf-mb-3 input_field_class" style="display: none;">
-                        <label for="exampleFormControlInput2" class="form-label">Organization Name Second Line</label>
-                        <input type="text" class="dcf-input-text dcf-w-100%" name="subject_second_line"
-                            value="Organization Second Line" placeholder="SecondLineOrganization">
-                    </div> -->
                     <div class="dcf-mb-3">
                         <select def id="approver" name="approver"
                             class="dcf-input-select dcf-b-1 dcf-b-solid dcf-rounded">
@@ -148,31 +167,18 @@
 
 <!-- script to connect input field and svg rendered texts -->
 <script>
-    const inputArray = {{json_lockups_fields | raw}};
+    const inputArray = {{ json_lockups_fields | raw}};
     let Svg = []; // select the fields accross all SVGs
     let InputDiv = []; // used to store the input field div container. used for showing and hiding input fields.
     let InputField = []; // used to store the input field itself. used for updating values accross field and SVGs.
-    // org_first_line
-    for (let k = 0; k <inputArray.length; k++) {
+
+    for (let k = 0; k < inputArray.length; k++) {
         Svg[k] = document.getElementsByClassName(inputArray[k]['slug']);
         InputDiv[k] = document.getElementById(inputArray[k]['slug']);
         InputField[k] = InputDiv[k].getElementsByTagName("input")[0];
-        InputField[k].addEventListener("input", function() {
+        InputField[k].addEventListener("input", function () {
             updateSvgs(k)
         });
-    }
-    window.addEventListener('load', setInitialValues)
-
-    function setInitialValues() { // set the initial value of the fields and svg according to the database. TODO: update fields to the form fields as well
-        for (let k = 0; k <inputArray.length; k++) {
-            for (let i = 0; i < Svg[k].length; i++) {
-            if (inputArray[k]['Uppercase'] == 1) {
-                Svg[k][i].innerHTML = inputArray[k]['Value'].toUpperCase();
-            } else {
-                Svg[k][i].innerHTML = inputArray[k]['Value'];
-            }
-        }
-    }
     }
 
     function updateSvgs(k) {
@@ -192,13 +198,14 @@
     const lockupTemplates = document.getElementsByClassName("lockup-templates");
     const lockupSvgTabs = document.getElementsByClassName("svgTabs");
     const input_fields = document.getElementsByClassName("input_field_class");
+    const templateFormInput = document.getElementById("lockupTemplateId");
     for (let i = 0; i < lockupTemplates.length; i++) {
         lockupTemplates[i].addEventListener("click", selectLockupTemplate);
     }
 
     function selectLockupTemplate(event) {
         let selectedSvgTab = document.getElementById(event.target.id + "svg");
-
+        templateFormInput.value = event.target.id;
         // remove the active tag from all the lockups
         for (let i = 0; i < lockupTemplates.length; i++) {
             let childElement = lockupTemplates[i].getElementsByClassName("img-thumb");
@@ -215,7 +222,7 @@
         // and set display: block to the one selected
         selectedSvgTab.style.display = "block";
 
-        // check the fields in the SVG and display the form field accordingly
+        // check the fields in the SVG and display the form field
         // first set all fields to display: none
         for (let j = 0; j < input_fields.length; j++) {
             input_fields[j].style.display = "none";
@@ -225,9 +232,27 @@
         for (let j = 0; j < input_fields.length; j++) {
             if (selectedSvgTab.getElementsByClassName(inputArray[j]['slug']).length != 0) {
                 InputDiv[j].style.display = "block";
-        }
+            }
         }
     }
+</script>
+
+<script>
+    const category_list = document.getElementById("category_list");
+    updateCategoryListing()
+    category_list.addEventListener("change", updateCategoryListing);
+
+    function updateCategoryListing() {
+        for (let i = 0; i < lockupTemplates.length; i++) {
+            tempCategory = category_list.value;
+        if (lockupTemplates[i].classList.contains(tempCategory)) {
+            lockupTemplates[i].style.display = "block";
+        } else {
+            lockupTemplates[i].style.display = "none";
+        }
+    }
+    }
+
 </script>
 
 {% endblock %}

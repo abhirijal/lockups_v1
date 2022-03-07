@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\LockupTemplatesRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LockupTemplatesRepository::class)]
@@ -25,35 +27,22 @@ class LockupTemplates
     #[ORM\Column(type: 'text', nullable: true)]
     private $svg;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private $org_first_line;
-
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private $org_second_line;
-
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private $subject_first_line;
-
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private $subject_second_line;
-
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private $acronym_first_line;
-
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private $acronym_second_line;
-
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private $acronym_subject;
-
     #[ORM\Column(type: 'text', nullable: true)]
     private $description;
 
     #[ORM\Column(type: 'integer', nullable: true)]
     private $links_to;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private $extension;
+    #[ORM\ManyToOne(targetEntity: LockupTemplatesCategories::class)]
+    private $category;
+
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    private $slug;
+
+    public function __construct()
+    {
+        $this->template = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -108,90 +97,6 @@ class LockupTemplates
         return $this;
     }
 
-    public function getOrgFirstLine(): ?int
-    {
-        return $this->org_first_line;
-    }
-
-    public function setOrgFirstLine(?int $org_first_line): self
-    {
-        $this->org_first_line = $org_first_line;
-
-        return $this;
-    }
-
-    public function getOrgSecondLine(): ?int
-    {
-        return $this->org_second_line;
-    }
-
-    public function setOrgSecondLine(?int $org_second_line): self
-    {
-        $this->org_second_line = $org_second_line;
-
-        return $this;
-    }
-
-    public function getSubjectFirstLine(): ?int
-    {
-        return $this->subject_first_line;
-    }
-
-    public function setSubjectFirstLine(?int $subject_first_line): self
-    {
-        $this->subject_first_line = $subject_first_line;
-
-        return $this;
-    }
-
-    public function getSubjectSecondLine(): ?int
-    {
-        return $this->subject_second_line;
-    }
-
-    public function setSubjectSecondLine(?int $subject_second_line): self
-    {
-        $this->subject_second_line = $subject_second_line;
-
-        return $this;
-    }
-
-    public function getAcronymFirstLine(): ?int
-    {
-        return $this->acronym_first_line;
-    }
-
-    public function setAcronymFirstLine(?int $acronym_first_line): self
-    {
-        $this->acronym_first_line = $acronym_first_line;
-
-        return $this;
-    }
-
-    public function getAcronymSecondLine(): ?int
-    {
-        return $this->acronym_second_line;
-    }
-
-    public function setAcronymSecondLine(?int $acronym_second_line): self
-    {
-        $this->acronym_second_line = $acronym_second_line;
-
-        return $this;
-    }
-
-    public function getAcronymSubject(): ?int
-    {
-        return $this->acronym_subject;
-    }
-
-    public function setAcronymSubject(?int $acronym_subject): self
-    {
-        $this->acronym_subject = $acronym_subject;
-
-        return $this;
-    }
-
     public function getDescription(): ?string
     {
         return $this->description;
@@ -216,14 +121,26 @@ class LockupTemplates
         return $this;
     }
 
-    public function getExtension(): ?int
+    public function getCategory(): ?LockupTemplatesCategories
     {
-        return $this->extension;
+        return $this->category;
     }
 
-    public function setExtension(?int $extension): self
+    public function setCategory(?LockupTemplatesCategories $category): self
     {
-        $this->extension = $extension;
+        $this->category = $category;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(?string $slug): self
+    {
+        $this->slug = $slug;
 
         return $this;
     }

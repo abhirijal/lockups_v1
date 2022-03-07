@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Lockups;
 use App\Entity\LockupTemplates;
+use App\Entity\LockupTemplatesCategories;
 use App\Entity\LockupTemplatesFields;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,6 +34,7 @@ class IndexController extends AbstractController
     {
         $lockups = $doctrine->getRepository(LockupTemplates::class)->findAll();
         $lockups_fields = $doctrine->getRepository(LockupTemplatesFields::class)->findAll();
+        $lockups_categories = $doctrine->getRepository(LockupTemplatesCategories::class)->findAll();
 
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
@@ -44,7 +46,8 @@ class IndexController extends AbstractController
             'page_name' => "CreateLockups",
             'lockups' => $lockups,
             'lockups_fields' => $lockups_fields,
-            'json_lockups_fields'=> $jsonContent
+            'json_lockups_fields'=> $jsonContent,
+            'categories' => $lockups_categories
         ]);
     }
 

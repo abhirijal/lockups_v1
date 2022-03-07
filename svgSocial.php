@@ -1,4 +1,5 @@
 <!-- 
+
 -->
 <?php
 
@@ -33,63 +34,59 @@ const RIGHT_CLOVER_H_4 = "M65.96,25.93L60.65 30.45 59.74 29.38 61.83 27.6 60.04 
 const CENTER_DIVIDER = "M51,0 L51,39 Z";
 const RECOGNIZED_STUDENT_ORGANIZATION = 'Recognized Student Organization';
 
-$n_main_color = "#d00000";
-$clover_color = "#129a63";
-$clover_h_color = "#ffffff"; 
-$secondary_text_color = "#000000";
+
+const SCARLET = '#d00000';
+const WHITE = '#ffffff';
+const BLACK = '#000000';
+const PANTONE_RED = '#cf0a2c'; #pantone 186cp
+const CMYK_RED = '#da1a32 device-cmyk(0.02, 1.00, 0.85, 0.06)';
+const FOUR_H_GREEN = '#129a63'; #pantone for this is 347U
+
+
+
+const VERT_N_OUTLINE_R = "M119.27942132 34.48421092h.33157896c.14210526 0 .1894737 0 .26052632.04736842.09473684.04736842.14210526.14210526.14210526.26052632 0 .09473684-.0236842.16578948-.07105263.2368421-.0236842.04736843-.07105263.04736843-.14210526.09473685h-.02368422l.26052633.49736844h-.1894737l-.2368421-.47368422h-.14210527v.47368422h-.18947368v-1.13684212zm.28421054.49736843h.09473684c.09473684-.0236842.14210527-.07105264.14210527-.1894737 0-.07105262-.02368422-.11842105-.09473685-.14210526h-.23684211v.33157895h.09473686zM116.81579 0h-13.97368V10.65789h2.36842v5.87369L95.073684.5447397 94.742105 0H82V10.65789h2.368421v14.68422H82V36h15.157896V25.34211H94.789475v-5.87369l10.136845 15.98684.35526.54474H118V25.34211h-2.36842V10.65789H118V 0h-1.18421zm.71053 1.18421V10.18421h-2.36842v15.63158h2.36842v9.71053H105.54211l-.21316-.33158-11.013161-17.36053v7.98158h2.368422v9.71053H82.473684v-9.71053h2.368421V10.18421h-2.368421V.4736797h11.984211l.213158.33158L105.68421 18.16579v-7.98158h-2.36842V.4736797h14.21053v.71053z";
+const VERT_N_R_CIRCLE = "M119.68205 34.10526c-.54474 0-.97105.42632-.97105.94737s.42631.94737.94737.94737c.52105 0 .94736-.42632.94736-.94737s-.42631-.94737-.92368-.94737zm-.0237 1.70527c-.42632 0-.7579-.33158-.7579-.7579 0-.42631.33158-.75789.7579-.75789.40263 0 .75789.35526.75789.75789 0 .42632-.33157.7579-.75789.7579z";
+const VERT_N_FILL = "M106.39474 20.60526L94.078946 1.1842097H83.18421V9.47368h2.368421v17.05264H83.18421v8.28947h12.789473v-8.28947h-2.368421V15.39474l12.315788 19.42105h10.89474v-8.28947h-2.36842V9.47368h2.36842V1.1842097h-12.78947V9.47368h2.36842v11.13158z";
+const VERT_N_SERIF = "M119.65837 35.81053c-.42632 0-.7579-.33158-.7579-.7579 0-.42631.33158-.75789.7579-.75789.40263 0 .75789.35526.75789.75789 0 .42632-.33158.7579-.75789.7579z";
+const VERT_N_R_FILL = "M116.81579.4736797h-13.5V10.18421h2.36842v7.98158L94.67105.8052597l-.189474-.33158H82.473681V10.18421h2.368421v15.63158h-2.368421v9.71053h14.210527v-9.71053h-2.368422v-7.98158l11.013164 17.36053.21316.33158H117.52632v-9.71053h-2.36842V10.18421h2.36842V.4736797h-.71053zM95.973681 26.52632v8.28947H83.184208v-8.28947h2.368421V9.47368h-2.368421V1.1842097h10.894736L106.39474 20.60526V9.47368h-2.36843V1.1842097h12.78948V9.47368h-2.36842v17.05264h2.36842v8.28947h-10.89474L93.60526 15.39474v11.13158h2.368421z";
+const VERT_BACKGROUND = "M-100 -100 L300 -100 L300 100 L-100 100 Z";
+
+
+
+
+$main_text_color = WHITE;
+$secondary_text_color = WHITE;
+$n_main_color = WHITE;
+$n_secondary_color = SCARLET;
+$height = 100;
+$width = 100;
+$y = -20;
+$x = 50;
+
 
 $svg = new EasySVG();
+$svg->addPath(VERT_BACKGROUND, array('fill' => $n_secondary_color));
+
 $svg->setFontSVG("Tungsten-Semibold.svg", 100, '#000000');
 $svg->setLetterSpacing(0.05);
-$svg->setFontSize(12);
-$svg->setFontColor("#d00000");
-
-$name = "EXTENSION COUNTRY";
-$svg->setFontSVG("Tungsten-Semibold.svg");
-$svg->setLetterSpacing(0.05);
-$svg->setFontSize(28);
-$svg->setFontColor($n_main_color);
-$text_width = $svg->textDimensions('EXTENSION')[0];
-$svg->addText('EXTENSION', 100 - ($text_width / 2), 32);
-
-$svg->setFontSVG("MercuryDisplay-SemIta.svg");
-$svg->setLetterSpacing(0);
-$svg->setFontSize(8.125);
-$svg->setFontColor("#000000");
-$text_width = $svg->textDimensions($name)[0];
-$svg->addText($name, 100 - ($text_width / 2), 66);
+$svg->setFontSize(22);
+$svg->setFontColor($main_text_color);
+$text_width = $svg->textDimensions("SOCIAL")[0];
+$svg->addText("SOCIAL", 100 - ($text_width / 2), 32);
 
 
-$svg->addAttribute('viewBox', "0 0 " . ($text_width + 44) . " 36");
-$svg->height = 36;
-$svg->width = $text_width + 44;
+
+$svg->addAttribute('viewBox', $x . " " .  $y . " " . ($width) . " " . ($height));
+            $svg->height = $height;
+            $svg->width = $width;
+
 
 // $svg->addPath(HORIZ_N_R_CIRCLE, array('fill' => "#d00000"));
 // $svg->addPath(HORIZ_N_FILL, array('fill' => "#d00000"));
 // $svg->addPath(HORIZ_N_OUTLINE_R, array('fill' => "#d00000"));
 
-$svg->addPath(LEFT_N_R_CIRCLE, array('fill' => $n_main_color, 'transform' => 'translate(50.5 0.1)'));
-$svg->addPath(LEFT_N_OUTLINE, array('fill' => $n_main_color, 'transform' => 'translate(50.5 0.1)'));
-$svg->addPath(LEFT_N_FILL, array('fill' => $n_main_color, 'transform' => 'translate(56, 0)'));
-$svg->addPath(LEFT_N_OUTLINE_R, array('fill' => $n_main_color, 'transform' => 'translate(50.5 0.1)'));
-
-$svg->addPath(RIGHT_CLOVER_FILL, array('fill' => $clover_color, 'transform' => 'translate(144.6758,24.75) rotate(180) scale(-1,1)'));
-$svg->addPath(RIGHT_CLOVER_LETTER_1, array('fill' => $clover_color, 'transform' => 'translate(140.91,34.26) rotate(180) scale(-1,1)'));
-$svg->addPath(RIGHT_CLOVER_LETTER_2, array('fill' => $clover_color, 'transform' => 'translate(140.737,33.5) rotate(180) scale(-1,1)'));
-$svg->addPath(RIGHT_CLOVER_LETTER_3, array('fill' => $clover_color, 'transform' => 'translate(141.0319,32.28) rotate(180) scale(-1,1)'));
-$svg->addPath(RIGHT_CLOVER_LETTER_4, array('fill' => $clover_color, 'transform' => 'translate(142.26,31.9) rotate(180) scale(-1,1)'));
-$svg->addPath(RIGHT_CLOVER_LETTER_5, array('fill' => $clover_color, 'transform' => 'translate(143.3116,30.35) rotate(180) scale(-1,1)'));
-$svg->addPath(RIGHT_CLOVER_LETTER_6, array('fill' => $clover_color, 'transform' => 'translate(143.4054,29.43) rotate(180) scale(-1,1)'));
-$svg->addPath(RIGHT_CLOVER_LETTER_7, array('fill' => $clover_color, 'transform' => 'translate(143.971,28.3368) rotate(180) scale(-1,1)'));
-$svg->addPath(RIGHT_CLOVER_LETTER_8, array('fill' => $clover_color, 'transform' => 'translate(144.4453,28.0718) rotate(180) scale(-1,1)'));
-$svg->addPath(RIGHT_CLOVER_H_1, array('fill' => $clover_h_color, 'transform' => 'translate(56, 0)'));
-$svg->addPath(RIGHT_CLOVER_H_2, array('fill' => $clover_h_color, 'transform' => 'translate(56, 0)'));
-$svg->addPath(RIGHT_CLOVER_H_3, array('fill' => $clover_h_color, 'transform' => 'translate(56, 0)'));
-$svg->addPath(RIGHT_CLOVER_H_4, array('fill' => $clover_h_color, 'transform' => 'translate(56, 0)'));
-
-$svg->addPath(CENTER_DIVIDER, array('fill' => $secondary_text_color, 'transform' => 'translate(50.5 0.1)', 'stroke' => $secondary_text_color, 'stroke-width' => '0.5pt'));
-
-
-
+$svg->addPath(VERT_N_R_CIRCLE, array('fill' => $n_main_color));
+$svg->addPath(VERT_N_FILL, array('fill' => $n_main_color));
+$svg->addPath(VERT_N_OUTLINE_R, array('fill' => $n_main_color));
 
 echo $svg->asXML();
