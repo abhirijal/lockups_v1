@@ -14,21 +14,6 @@ class Lockups
     private $id;
 
     #[ORM\Column(type: 'integer')]
-    private $template_id;
-
-    #[ORM\Column(type: 'string', length: 50, nullable: true)]
-    private $org_first_line;
-
-    #[ORM\Column(type: 'string', length: 50, nullable: true)]
-    private $org_second_line;
-
-    #[ORM\Column(type: 'string', length: 50, nullable: true)]
-    private $subject_first_line;
-
-    #[ORM\Column(type: 'string', length: 50, nullable: true)]
-    private $subject_second_line;
-
-    #[ORM\Column(type: 'integer')]
     private $approver;
 
     #[ORM\Column(type: 'integer')]
@@ -37,69 +22,13 @@ class Lockups
     #[ORM\Column(type: 'integer')]
     private $user;
 
+    #[ORM\ManyToOne(targetEntity: LockupTemplates::class)]
+    #[ORM\JoinColumn(nullable: false, referencedColumnName:"id")]
+    private $template;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getTemplateId(): ?int
-    {
-        return $this->template_id;
-    }
-
-    public function setTemplateId(int $template_id): self
-    {
-        $this->template_id = $template_id;
-
-        return $this;
-    }
-
-    public function getOrgFirstLine(): ?string
-    {
-        return $this->org_first_line;
-    }
-
-    public function setOrgFirstLine(?string $org_first_line): self
-    {
-        $this->org_first_line = $org_first_line;
-
-        return $this;
-    }
-
-    public function getOrgSecondLine(): ?string
-    {
-        return $this->org_second_line;
-    }
-
-    public function setOrgSecondLine(?string $org_second_line): self
-    {
-        $this->org_second_line = $org_second_line;
-
-        return $this;
-    }
-
-    public function getSubjectFirstLine(): ?string
-    {
-        return $this->subject_first_line;
-    }
-
-    public function setSubjectFirstLine(?string $subject_first_line): self
-    {
-        $this->subject_first_line = $subject_first_line;
-
-        return $this;
-    }
-
-    public function getSubjectSecondLine(): ?string
-    {
-        return $this->subject_second_line;
-    }
-
-    public function setSubjectSecondLine(?string $subject_second_line): self
-    {
-        $this->subject_second_line = $subject_second_line;
-
-        return $this;
     }
 
     public function getApprover(): ?int
@@ -134,6 +63,18 @@ class Lockups
     public function setUser(int $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getTemplate(): ?LockupTemplates
+    {
+        return $this->template;
+    }
+
+    public function setTemplate(?LockupTemplates $template): self
+    {
+        $this->template = $template;
 
         return $this;
     }

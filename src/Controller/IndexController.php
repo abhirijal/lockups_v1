@@ -1,13 +1,17 @@
 <?php
 // src/Controller/indexController.php
+
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Lockups;
+use App\Entity\LockupsFields;
 use App\Entity\LockupTemplates;
 use App\Entity\LockupTemplatesCategories;
 use App\Entity\LockupTemplatesFields;
+use App\Entity\Svg;
+use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -21,11 +25,13 @@ use Symfony\Component\Serializer\Serializer;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Length;
+use WDN\Bundle\FrameworkBundle\Controller\BaseController;
+use App\Controller\LockupsGeneratorController;
+use phpCAS;
 
 
-
-
-class IndexController extends AbstractController
+class IndexController extends BaseController
 {
     /**
      * @Route("/", name="homePage", methods={"GET"})
@@ -46,7 +52,7 @@ class IndexController extends AbstractController
             'page_name' => "CreateLockups",
             'lockups' => $lockups,
             'lockups_fields' => $lockups_fields,
-            'json_lockups_fields'=> $jsonContent,
+            'json_lockups_fields' => $jsonContent,
             'categories' => $lockups_categories
         ]);
     }
@@ -54,23 +60,22 @@ class IndexController extends AbstractController
     /**
      * @Route("/", name="addLockup", methods={"POST"})
      */
-    public function addLockup(Request $request, ManagerRegistry $doctrine, ValidatorInterface $validator): RedirectResponse
+    public function addLockup(Request $request, ManagerRegistry $doctrine, ValidatorInterface $validator, ): RedirectResponse
     {
+        $fields = $doctrine->getRepository(LockupTemplatesFields::class)->findAll();
+
         $entityManager = $doctrine->getManager();
 
-        $lockuptemplate = $request->request->get('lockuptemplate');
-        $org_first_line = $request->request->get('org_first_line');
-        $org_second_line = $request->request->get('org_second_line');
-        $approver = $request->request->get('approver');
+        $lockuptemplate = (int)$request->request->get('lockuptemplate');
+        $approver = (int)$request->request->get('approver');
         $lockups = new Lockups();
+        $template = $doctrine->getRepository(LockupTemplates::class)->find($lockuptemplate);
+        $arr = [];
+        $count = 0;
 
-        if ($approver == "") {
-            $approver = 1;
-        }
 
         $lockups->setApprover($approver);
-        $lockups->setOrgFirstLine($org_first_line);
-        $lockups->setTemplateId($lockuptemplate);
+        $lockups->setTemplate($template);
         $lockups->setStatus(0);
         $lockups->setUser(0);
         $errors = $validator->validate($lockups);
@@ -80,8 +85,31 @@ class IndexController extends AbstractController
                 'page_name' => "CreateLockups"
             ]);
         }
+
         $entityManager->persist($lockups);
+        foreach ($fields as $item) {
+            if (($request->request->get($item->getSlug())) != "") {
+                $arr[$count] = new LockupsFields;
+                $arr[$count]->setLockup($lockups);
+                $arr[$count]->setFields($item);
+                $arr[$count]->setValue($request->request->get($item->getSlug()));
+                $entityManager->persist($arr[$count]);
+                $count++;
+            }
+        }
         $entityManager->flush();
+
+        $lockup_fields = $doctrine->getRepository(LockupsFields::class)->findAll($lockups->getId());
+        $svg = new Svg();
+        $svg->setValue($this->forward('App\Controller\LockupsGeneratorController::createLockup', [
+            'template'  => $template->getSlug(),
+            'lockup' => $arr,
+            'orient' => $template->getStyle(),
+        ]));
+        // $svg->setValue(LockupsGenerator::createLockup($template->getSlug(), $arr, $template->getStyle()));
+        $entityManager->persist($svg);
+        $entityManager->flush();
+
         // save it in the database and redirect to the manage lockups page
         return $this->redirectToRoute('manageLockups', [], 302);
     }
@@ -101,11 +129,22 @@ class IndexController extends AbstractController
      */
     public function manageLockups(ManagerRegistry $doctrine): Response
     {
+        phpCAS::setVerbose(true);
+        if (!phpCAS::isInitialized()) {
+            phpCAS::client(CAS_VERSION_2_0, 'shib.unl.edu', 443, 'idp/profile/cas');
+            //\phpCAS::setCasServerCACert(self::$cas_cert_path);
+            phpCAS::setNoCasServerValidation();
+        }
+        phpCAS::forceAuthentication();
+
+        $user = phpCAS::getUser();
+
         $product = $doctrine->getRepository(Lockups::class)->findAll();
         return $this->render('base.html.twig', [
             'page_template' => "manageLockups.html.twig",
             'page_name' => "ManageLockups",
-            'lockups_array' => $product
+            'lockups_array' => $product,
+            'user' => $user
         ]);
     }
 
@@ -115,10 +154,14 @@ class IndexController extends AbstractController
     public function deleteLockups(ManagerRegistry $doctrine, Request $request): RedirectResponse
     {
         $id = $request->request->get('id');
-        $product = $doctrine->getRepository(Lockups::class)->find($id);
-
+        $lockups = $doctrine->getRepository(Lockups::class)->find($id);
+        $lockup_fields = $doctrine->getRepository(LockupsFields::class)->findAll($lockups->getId());
         $entityManager = $doctrine->getManager();
-        $entityManager->remove($product);
+
+        foreach ($lockup_fields as $item) {
+            $entityManager->remove(($item));
+        }
+        $entityManager->remove($lockups);
         $entityManager->flush();
 
         return $this->redirectToRoute('manageLockups', [], 302);

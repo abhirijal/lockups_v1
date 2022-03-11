@@ -1,26 +1,25 @@
+{% block content %}
 {% block body %}
 
-<div class="dcf-wrapper dcf-bleed dcf-pt-4 dcf-pb-7">
-    <div class="dcf-grid">
-        <div class="dcf-col-33%-start left-sidebar dcf-rounded dcf-p-6">
+<div class="dcf-wrapper dcf-bleed dcf-pb-7">
+    <div class="dcf-grid dcf-1st@md">
+        <div class="dcf-col-25%-start dcf-rounded dcf-p-6">
             <h5 class="dcf-mb-5">Select your template</h5>
-            <nav class="nav nav-pills nav-justified dcf-mb-6">
-                <button id="horizontal-button" class="nav-link active unl-bg-scarlet"
+            <div class="dcf-mb-6">
+            <div class="dcf-grid dcf-grid-halves dcf-mb-5">
+                <button id="horizontal-button" class="tabs-button tabs-button-active"
                     aria-current="page">Horizontal</button>
-                <button id="vertical-button" class="nav-link unl-darker-gray">Vertical</button>
+                <button id="vertical-button" class="tabs-button">Vertical</button>
+                </div>
                 <select id="category_list" name="category_list"
                     class="dcf-input-select dcf-b-1 dcf-b-solid dcf-rounded dcf-mt-2">
                     {% for item in categories %}
                     <option value="{{item.getSlug}}">{{item.getName}}</option>
                     {% endfor %}
                 </select>
-            </nav>
+            </div>
             <div style="height: 60vh; overflow-y: auto;">
                 <div id="horizontal-tab">
-                    <!-- <div id="hlogo01" class="dcf-p-3 dcf-mt-3 dcf-mb-3 dcf-relative" onclick="setLockup('hlogo01')">
-                        <img style="width: 400px; height: auto;" src="img/org1.png" alt="">
-                        <div class="dcf-absolute img-thumb img-thumb-active"></div>
-                    </div>-->
                     {% for item in lockups %}
                     {% if item.getStyle == "h" %}
                     <div class="dcf-p-3 dcf-mt-3 dcf-mb-3 dcf-relative lockup-templates {{item.getCategory.getSlug}}" style="display: none;" value="{{item.getCategory.getSlug}}">
@@ -45,7 +44,7 @@
                 </div>
             </div>
         </div>
-        <div class="dcf-col-67%-end dcf-p-6">
+        <div class="dcf-col-75%-end dcf-p-6 dcf-2nd@md">
             <h5 class="dcf-mb-6">Preview</h5>
             <div>
                 {% for item in lockups %}
@@ -94,15 +93,15 @@
                         style="display: {{(item.getId == 1) ? " block" : "none" }};">
                         <label for="exampleFormControlInput1" class="form-label">{{ item.getName }}</label>
                         <input type="text" class="dcf-input-text dcf-w-100%" name="{{ item.getSlug }}"
-                            maxlength="{{ item.getLength }}" placeholder="{{item.getValue}}" placeholder="Organization"
-                            {{(item.getUppercase==1) ? "style=\" text-transform:uppercase\""}}>
+                            maxlength="{{ item.getLength }}" placeholder="{{item.getPlaceholder}}"
+                            {# {{(item.getUppercase==1) ? "style=\" text-transform:uppercase\""}} #}>
                         <p style="font-size: .8em;font-style: italic;">Maximum {{ item.getLength }} characters.</p>
                     </div>
                     {% endfor %}
                     <div class="dcf-mb-3">
                         <select def id="approver" name="approver"
                             class="dcf-input-select dcf-b-1 dcf-b-solid dcf-rounded">
-                            <option value="">Select your Communicator Contact</option>
+                            <option value="0">Select your Communicator Contact</option>
                             <option value="4">Michael Bergland-Riese (EXT)</option>
                             <option value="5">Kerry McCullough-Vondrak (ARCH)</option>
                             <option value="6">Terri Pieper (CAS)</option>
@@ -141,27 +140,20 @@
     const horizontalTab = document.getElementById("horizontal-tab");
     const verticalTab = document.getElementById("vertical-tab");
 
-    horizontalBtn.addEventListener("click", clickHorizontal);
-    verticalBtn.addEventListener("click", clickVertical);
+    horizontalBtn.addEventListener("click", function() {
+        switchTabs(horizontalBtn, verticalBtn, horizontalTab, verticalTab)
+    });
 
-    function clickHorizontal() {
-        verticalBtn.classList.remove("active", "unl-bg-scarlet");
-        verticalBtn.classList.add("unl-darker-gray");
-        horizontalBtn.classList.add("unl-bg-scarlet", "active");
-        horizontalBtn.classList.remove("unl-darker-gray");
+    verticalBtn.addEventListener("click", function() {
+        switchTabs(verticalBtn, horizontalBtn, verticalTab, horizontalTab)
+    });
 
-        verticalTab.style.display = "none";
-        horizontalTab.style.display = "block";
-    }
+    function switchTabs(btnClicked, btnCurrent, tabClicked, tabCurrent) {
+        btnCurrent.classList.remove("tabs-button-active");
+        btnClicked.classList.add("tabs-button-active");
 
-    function clickVertical() {
-        horizontalBtn.classList.remove("active", "unl-bg-scarlet");
-        horizontalBtn.classList.add("unl-darker-gray");
-        verticalBtn.classList.add("unl-bg-scarlet", "active");
-        verticalBtn.classList.remove("unl-darker-gray");
-
-        horizontalTab.style.display = "none";
-        verticalTab.style.display = "block";
+        tabCurrent.style.display = "none";
+        tabClicked.style.display = "block";
     }
 </script>
 
@@ -255,4 +247,5 @@
 
 </script>
 
+{% endblock %}
 {% endblock %}

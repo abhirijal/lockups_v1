@@ -1,7 +1,8 @@
 {% block body %}
-<div class="dcf-wrapper dcf-bleed dcf-pt-7 dcf-pb-7 unl-bg-cream">
+<div class="dcf-wrapper dcf-bleed dcf-pb-7 unl-bg-cream">
+<p>Welcome {{ user }} </p>
     <h3>Manage your lockups</h3>
-    <table class="dcf-table dcf-table-bordered dcf-table-striped dcf-w-100%">
+    <table class="dcf-table dcf-table-bordered dcf-table-striped dcf-table-responsive dcf-w-100%">
         <tr>
             <th>
                 Title
@@ -41,7 +42,7 @@
         {% for item in lockups_array%}
         <tr>
             <td>
-                {{item.getOrgFirstLine}}
+                {{item.getId}}
             </td>
             <td>
                 <img style="width: 250px; height: auto;" src="/img/org1.png" alt="">
@@ -54,7 +55,7 @@
                 <strong>Creative</strong>: Awaiting Approval
             </td>
             <td>
-                <a href="/lockups/edit/{{item.getId}}"><button class="dcf-button dcf-btn-secondary">View</button></a>
+                <a href="/lockups/edit/{{item.getId}}"><button class="dcf-btn dcf-btn-secondary">View</button></a>
                 <form action="/lockups/delete/" method="POST" style="display: inline;">
                     <button type="submit" class="dcf-btn dcf-btn-primary">Delete</button>
                     <input type="hidden" name="id" value="{{item.getId}}">
