@@ -1,4 +1,7 @@
 {
+    "avirizal51/easy-svg": {
+        "version": "dev-main"
+    },
     "digitalcampusframework/dcf-symfony-framework": {
         "version": "dev-main"
     },

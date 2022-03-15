@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Lockups;
+use App\Entity\Users;
 use App\Entity\LockupsFields;
 use App\Entity\LockupTemplates;
 use App\Entity\LockupTemplatesCategories;
@@ -27,7 +28,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Length;
 use WDN\Bundle\FrameworkBundle\Controller\BaseController;
-use App\Controller\LockupsGeneratorController;
 use phpCAS;
 
 
@@ -60,7 +60,7 @@ class IndexController extends BaseController
     /**
      * @Route("/", name="addLockup", methods={"POST"})
      */
-    public function addLockup(Request $request, ManagerRegistry $doctrine, ValidatorInterface $validator, ): RedirectResponse
+    public function addLockup(Request $request, ManagerRegistry $doctrine, ValidatorInterface $validator, )
     {
         $fields = $doctrine->getRepository(LockupTemplatesFields::class)->findAll();
 
@@ -86,7 +86,6 @@ class IndexController extends BaseController
             ]);
         }
 
-        $entityManager->persist($lockups);
         foreach ($fields as $item) {
             if (($request->request->get($item->getSlug())) != "") {
                 $arr[$count] = new LockupsFields;
@@ -97,16 +96,13 @@ class IndexController extends BaseController
                 $count++;
             }
         }
-        $entityManager->flush();
 
         $lockup_fields = $doctrine->getRepository(LockupsFields::class)->findAll($lockups->getId());
         $svg = new Svg();
-        $svg->setValue($this->forward('App\Controller\LockupsGeneratorController::createLockup', [
-            'template'  => $template->getSlug(),
-            'lockup' => $arr,
-            'orient' => $template->getStyle(),
-        ]));
-        // $svg->setValue(LockupsGenerator::createLockup($template->getSlug(), $arr, $template->getStyle()));
+        $generatedSVG = LockupsGeneratorController::createPreviewLockup($template->getSlug(), $arr, $template->getStyle());
+        $svg->setValue($generatedSVG);
+        $lockups->setPreview($generatedSVG);
+        $entityManager->persist($lockups);
         $entityManager->persist($svg);
         $entityManager->flush();
 
@@ -128,17 +124,11 @@ class IndexController extends BaseController
      * @Route("/lockups/manage", name="manageLockups")
      */
     public function manageLockups(ManagerRegistry $doctrine): Response
-    {
-        phpCAS::setVerbose(true);
-        if (!phpCAS::isInitialized()) {
-            phpCAS::client(CAS_VERSION_2_0, 'shib.unl.edu', 443, 'idp/profile/cas');
-            //\phpCAS::setCasServerCACert(self::$cas_cert_path);
-            phpCAS::setNoCasServerValidation();
-        }
-        phpCAS::forceAuthentication();
-
-        $user = phpCAS::getUser();
-
+    { 
+        Auth::setUpClient();
+        Auth::autoLogin();
+        Auth::authenticate();
+        $user = Auth::getUser();
         $product = $doctrine->getRepository(Lockups::class)->findAll();
         return $this->render('base.html.twig', [
             'page_template' => "manageLockups.html.twig",

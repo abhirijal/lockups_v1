@@ -2,7 +2,7 @@
 <div class="dcf-wrapper dcf-bleed dcf-pb-7 unl-bg-cream">
 <p>Welcome {{ user }} </p>
     <h3>Manage your lockups</h3>
-    <table class="dcf-table dcf-table-bordered dcf-table-striped dcf-table-responsive dcf-w-100%">
+    <table class="dcf-table dcf-table-bordered dcf-table-responsive dcf-table-striped dcf-w-100%">
         <tr>
             <th>
                 Title
@@ -20,38 +20,19 @@
                 Actions
             </th>
         </tr>
-        <!-- <tr>
-            <td>
-                TEST
-            </td>
-            <td>
-                <img style="width: 250px; height: auto;" src="/img/org1.png" alt="">
-            </td>
-            <td>
-                University of Nebraska-Lincoln
-            </td>
-            <td>
-                <strong>Communicator</strong>: Awaiting Approval<br>
-                <strong>Creative</strong>: Awaiting Approval
-            </td>
-            <td>
-                <a href="/lockups/edit/1"><button class="dcf-button dcf-btn-secondary">View</button></a> <button
-                    class="dcf-button dcf-btn-primary">Delete</button>
-            </td>
-        </tr> -->
         {% for item in lockups_array%}
         <tr>
             <td>
                 {{item.getId}}
             </td>
             <td>
-                <img style="width: 250px; height: auto;" src="/img/org1.png" alt="">
+                {{item.getPreview | raw}}
             </td>
             <td>
-                University of Nebraska-Lincoln
+                {{item.getApprover}}
             </td>
             <td>
-                <strong>Communicator</strong>: Awaiting Approval<br>
+                <p><strong>Communicator</strong>: Awaiting Approval<br></p>
                 <strong>Creative</strong>: Awaiting Approval
             </td>
             <td>

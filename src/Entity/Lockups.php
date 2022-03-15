@@ -26,6 +26,9 @@ class Lockups
     #[ORM\JoinColumn(nullable: false, referencedColumnName:"id")]
     private $template;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private $preview;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -75,6 +78,18 @@ class Lockups
     public function setTemplate(?LockupTemplates $template): self
     {
         $this->template = $template;
+
+        return $this;
+    }
+
+    public function getPreview()
+    {
+        return $this->preview;
+    }
+
+    public function setPreview($preview): self
+    {
+        $this->preview = $preview;
 
         return $this;
     }

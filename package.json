@@ -48,14 +48,5 @@
         "gulp-cli": "^2.3.0",
         "object-fit-images": "^3.2.4",
         "requirejs": "^2.3.6"
-    },
-    "repositories": [
-        {
-          "type": "vcs",
-          "url": "https://github.com/kartsims/easysvg.git"
-        }
-      ],
-      "require": {
-          "kartsims/easysvg": "dev-master"
-      }
+    }
 }

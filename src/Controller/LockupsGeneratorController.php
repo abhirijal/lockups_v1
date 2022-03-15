@@ -2,12 +2,10 @@
 
 namespace App\Controller;
 
-
-use Svg\EasySVG;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use avirizal51\EasySvg\EasySVG;
 
 
-class LockupsGeneratorController extends AbstractController
+class LockupsGeneratorController
 {
     const SCARLET = '#d00000';
     const WHITE = '#ffffff';
@@ -56,12 +54,14 @@ class LockupsGeneratorController extends AbstractController
     const CENTER_DIVIDER = "M51,0 L51,39 Z";
 
     const RECOGNIZED_STUDENT_ORGANIZATION = 'Recognized Student Organization';
-    
-    public static function createPreviewLockup($template, $lockup, $orient = 'horiz') {
+
+    public static function createPreviewLockup($template, $lockup, $orient = 'horiz')
+    {
         return self::createLockup($template, $lockup, $orient, 'RGB', false, true);
     }
 
-    public static function getLockupFields($object, $name) {
+    public static function getLockupFields($object, $name)
+    {
         foreach ($object as $item) {
             if (($item->getFields()->getSlug()) == $name) {
                 return $item->getValue();
@@ -69,7 +69,7 @@ class LockupsGeneratorController extends AbstractController
         }
         return "";
     }
-    public function createLockup($template, $lockup, $orient = 'h', $style = 'RGB', $rev = false, $preview = false): String
+    public static function createLockup($template, $lockup, $orient = 'h', $style = 'RGB', $rev = false, $preview = false)
     {
 
         $svg = new EasySVG();
@@ -109,7 +109,7 @@ class LockupsGeneratorController extends AbstractController
                 $n_main_color = self::PANTONE_RED;
                 if (!$rev) {
                     $main_text_color = self::PANTONE_RED;
-                    $secondary_text_color = self::PANTONE_RED;                 
+                    $secondary_text_color = self::PANTONE_RED;
                 } else {
                     $main_text_color = self::WHITE;
                     $secondary_text_color = self::WHITE;
@@ -155,41 +155,41 @@ class LockupsGeneratorController extends AbstractController
             #add the texts for horizontal orientation lockups
             switch ($template) {
                 case 'h_org':
-                    $svg->addText(self::getLockupFields($lockup,"org_first_line"), 44, 7.75);
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"org_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_first_line"), 44, 7.75);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "org_first_line"))[0];
 
-                    $width = ($text_width + 44);
+                    $width = ($main_text_width + 44);
                     break;
                 case 'h_org_2':
-                    $svg->addText(self::getLockupFields($lockup,"org_first_line"), 44, 2.25);
-                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup,"org_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_first_line"), 44, 2.25);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "org_first_line"))[0];
 
-                    $svg->addText(self::getLockupFields($lockup,"org_second_line"), 44, 13.25);
-                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup,"org_second_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_second_line"), 44, 13.25);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "org_second_line"))[0];
 
                     // $svg->addText("org second", 44, 13.25);
                     // $secondary_text_width = $svg->textDimensions("org second")[0];
-                    
+
 
                     $width = max($main_text_width, $secondary_text_width) + 44;
                     break;
                 case 'h_org_subject':
-                    $svg->addText(self::getLockupFields($lockup,"org_first_line"), 44, 7.75);
-                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup,"org_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_first_line"), 44, 7.75);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "org_first_line"))[0];
 
                     $svg->setFontSVG(self::MERCURY);
                     $svg->setLetterSpacing(0);
                     $svg->setFontSize(8.125);
                     $svg->setFontColor($secondary_text_color);
-                    $svg->addText(self::getLockupFields($lockup,"subject_first_line"), 44, 26);
-                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup,"subject_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "subject_first_line"), 44, 26);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "subject_first_line"))[0];
 
                     $height = 38;
                     $width = max($main_text_width, $secondary_text_width) + 44;
                     break;
                 case 'h_student_org':
-                    $svg->addText(self::getLockupFields($lockup,"student_org_first_line"), 44, 7.75);
-                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup,"student_org_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "student_org_first_line"), 44, 7.75);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "student_org_first_line"))[0];
 
                     $svg->setFontSVG(self::MERCURY);
                     $svg->setLetterSpacing(0);
@@ -197,107 +197,107 @@ class LockupsGeneratorController extends AbstractController
                     $svg->setFontColor($secondary_text_color);
                     $svg->addText(self::RECOGNIZED_STUDENT_ORGANIZATION, 44, 26);
                     $secondary_text_width = $svg->textDimensions(self::RECOGNIZED_STUDENT_ORGANIZATION)[0];
-                    
+
                     $height = 38;
                     $width = max($main_text_width, $secondary_text_width) + 44;
                     break;
                 case 'h_org_subject_2':
-                    $svg->addText(self::getLockupFields($lockup,"org_first_line"), 44, -5.8);
-                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup,"org_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_first_line"), 44, -5.8);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "org_first_line"))[0];
 
                     $svg->setFontSVG(self::MERCURY);
                     $svg->setLetterSpacing(0);
                     $svg->setFontSize(8.125);
                     $svg->setFontColor($secondary_text_color);
-                    $svg->addText(self::getLockupFields($lockup,"subject_first_line"), 44, 17);
-                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup,"subject_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "subject_first_line"), 44, 17);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "subject_first_line"))[0];
 
-                    $svg->addText(self::getLockupFields($lockup,"subject_second_line"), 44, 26);
-                    $third_width = $svg->textDimensions(self::getLockupFields($lockup,"subject_second_line"))[0];
-                    
+                    $svg->addText(self::getLockupFields($lockup, "subject_second_line"), 44, 26);
+                    $third_width = $svg->textDimensions(self::getLockupFields($lockup, "subject_second_line"))[0];
+
                     $height = 38;
                     $width = max($main_text_width, $secondary_text_width, $third_width) + 44;
                     break;
                 case 'h_org_2_subject':
-                    $svg->addText(self::getLockupFields($lockup,"org_first_line"), 44, -5.8);
-                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup,"org_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_first_line"), 44, -5.8);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "org_first_line"))[0];
 
-                    $svg->addText(self::getLockupFields($lockup,"org_second_line"), 44, 5.2);
-                    $third_width = $svg->textDimensions(self::getLockupFields($lockup,"org_second_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_second_line"), 44, 5.2);
+                    $third_width = $svg->textDimensions(self::getLockupFields($lockup, "org_second_line"))[0];
 
                     $svg->setFontSVG(self::MERCURY);
                     $svg->setLetterSpacing(0);
                     $svg->setFontSize(8.125);
                     $svg->setFontColor($secondary_text_color);
-                    $svg->addText(self::getLockupFields($lockup,"subject_first_line"), 44, 26);
-                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup,"subject_first_line"))[0];
-                    
+                    $svg->addText(self::getLockupFields($lockup, "subject_first_line"), 44, 26);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "subject_first_line"))[0];
+
                     $height = 38;
                     $width = max($main_text_width, $secondary_text_width, $third_width) + 44;
                     break;
                 case 'h_org_2_subject_2':
-                    $svg->addText(self::getLockupFields($lockup,"org_first_line"), 44, -5.8);
-                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup,"org_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_first_line"), 44, -5.8);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "org_first_line"))[0];
 
-                    $svg->addText(self::getLockupFields($lockup,"org_second_line"), 44, 4.2);
-                    $third_width = $svg->textDimensions(self::getLockupFields($lockup,"org_second_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_second_line"), 44, 4.2);
+                    $third_width = $svg->textDimensions(self::getLockupFields($lockup, "org_second_line"))[0];
 
                     $svg->setFontSVG(self::MERCURY);
                     $svg->setLetterSpacing(0);
                     $svg->setFontSize(7);
                     $svg->setFontColor($secondary_text_color);
-                    $svg->addText(self::getLockupFields($lockup,"subject_first_line"), 44, 19);
-                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup,"subject_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "subject_first_line"), 44, 19);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "subject_first_line"))[0];
 
-                    $svg->addText(self::getLockupFields($lockup,"subject_second_line"), 44, 27);
-                    $fourth_width = $svg->textDimensions(self::getLockupFields($lockup,"subject_second_line"))[0];
-                    
+                    $svg->addText(self::getLockupFields($lockup, "subject_second_line"), 44, 27);
+                    $fourth_width = $svg->textDimensions(self::getLockupFields($lockup, "subject_second_line"))[0];
+
                     $height = 38;
                     $width = max($main_text_width, $secondary_text_width, $third_width, $fourth_width) + 44;
                     break;
-	            case 'h_student_org_2':
-		            $svg->addText(self::getLockupFields($lockup,"student_org_first_line"), 44, -5.8);
-		            $main_text_width = $svg->textDimensions(self::getLockupFields($lockup,"student_org_first_line"))[0];
+                case 'h_student_org_2':
+                    $svg->addText(self::getLockupFields($lockup, "student_org_first_line"), 44, -5.8);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "student_org_first_line"))[0];
 
-		            $svg->addText(self::getLockupFields($lockup,"student_org_second_line"), 44, 5.2);
-		            $third_width = $svg->textDimensions(self::getLockupFields($lockup,"student_org_second_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "student_org_second_line"), 44, 5.2);
+                    $third_width = $svg->textDimensions(self::getLockupFields($lockup, "student_org_second_line"))[0];
 
-		            $svg->setFontSVG(self::MERCURY);
-		            $svg->setLetterSpacing(0);
-		            $svg->setFontSize(8.125);
-		            $svg->setFontColor($secondary_text_color);
-		            $svg->addText(self::RECOGNIZED_STUDENT_ORGANIZATION, 44, 26);
-		            $secondary_text_width = $svg->textDimensions(self::RECOGNIZED_STUDENT_ORGANIZATION)[0];
-		            
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(8.125);
+                    $svg->setFontColor($secondary_text_color);
+                    $svg->addText(self::RECOGNIZED_STUDENT_ORGANIZATION, 44, 26);
+                    $secondary_text_width = $svg->textDimensions(self::RECOGNIZED_STUDENT_ORGANIZATION)[0];
+
                     $height = 38;
                     $width = max($main_text_width, $secondary_text_width, $third_width) + 44;
-		            break;
+                    break;
                 case 'h_acronym':
                     $svg->setFontSize(22);
-                    
-                    $svg->addText(self::getLockupFields($lockup,"acronym_first_line"), 44, -0.5);
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"acronym_first_line"))[0];
-                    
+
+                    $svg->addText(self::getLockupFields($lockup, "acronym_first_line"), 44, -0.5);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "acronym_first_line"))[0];
+
                     $height = 36;
-                    $width = $text_width + 44;
+                    $width = $main_text_width + 44;
                     break;
                 case 'h_acronym_subject':
                     $svg->setFontSize(22);
-                    
-                    $svg->addText(self::getLockupFields($lockup,"acronym_first_line"), 44, -10.5);
-                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup,"acronym_first_line"))[0];
+
+                    $svg->addText(self::getLockupFields($lockup, "acronym_first_line"), 44, -10.5);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "acronym_first_line"))[0];
 
                     $svg->setFontSize(16.25);
                     $svg->setFontColor($secondary_text_color);
-                    $svg->addText(self::getLockupFields($lockup,"acronym_subject"), 44, 16.25);
-                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup,"acronym_subject"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "acronym_subject"), 44, 16.25);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "acronym_subject"))[0];
 
                     $height = 40;
                     $width = max($main_text_width, $secondary_text_width) + 44;
                     break;
                 case 'h_extension':
                     $svg->setFontSize(22);
-                    
+
                     $svg->addText('EXTENSION', 44, -0.5);
                     $main_text_width = $svg->textDimensions('EXTENSION')[0];
 
@@ -305,15 +305,15 @@ class LockupsGeneratorController extends AbstractController
                     $svg->setLetterSpacing(0);
                     $svg->setFontSize(8.125);
                     $svg->setFontColor($secondary_text_color);
-                    $svg->addText(self::getLockupFields($lockup,"extension"), 44, 26);
-                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup,"extension"))[0];
-                    
+                    $svg->addText(self::getLockupFields($lockup, "extension"), 44, 26);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "extension"))[0];
+
                     $height = 38;
                     $width = max($main_text_width, $secondary_text_width) + 44;
                     break;
                 case 'h_ncta':
                     $svg->setFontSize(22);
-                    
+
                     $svg->addText('NCTA', 44, -0.5);
                     $main_text_width = $svg->textDimensions('NCTA')[0];
 
@@ -321,8 +321,8 @@ class LockupsGeneratorController extends AbstractController
                     $svg->setLetterSpacing(0);
                     $svg->setFontSize(8.125);
                     $svg->setFontColor($secondary_text_color);
-                    $svg->addText(self::getLockupFields($lockup,"subject_first_line"), 44, 26);
-                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup,"subject_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "subject_first_line"), 44, 26);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "subject_first_line"))[0];
 
                     $height = 38;
                     $width = max($main_text_width, $secondary_text_width) + 44;
@@ -337,178 +337,216 @@ class LockupsGeneratorController extends AbstractController
                 $svg->addPath(self::HORIZ_N_SERIF, array('fill' => $n_secondary_color));
             }
         } else if ($orient == 'v') {
+            $main_text_width = 0;
+            $secondary_text_width = 0;
+            $third_width = 0;
+            $fourth_width = 0;
             switch ($template) {
-                #add the texts for vertical orientation
+                    #add the texts for vertical orientation
                 case 'v_org':
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"org_first_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"org_first_line"), 100 - ($text_width / 2), 37);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_first_line"), 100 - ($main_text_width / 2), 37);
                     break;
                 case 'v_org_2':
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"org_first_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"org_first_line"), 100 - ($text_width / 2), 37);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_first_line"), 100 - ($main_text_width / 2), 37);
 
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"org_second_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"org_second_line"), 100 - ($text_width / 2), 48);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "org_second_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_second_line"), 100 - ($secondary_text_width / 2), 48);
                     break;
                 case 'v_org_subject':
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"org_first_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"org_first_line"), 100 - ($text_width / 2), 37);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_first_line"), 100 - ($main_text_width / 2), 37);
 
                     $svg->setFontSVG(self::MERCURY);
                     $svg->setLetterSpacing(0);
                     $svg->setFontSize(8.125);
                     $svg->setFontColor($secondary_text_color);
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"subject_first_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"subject_first_line"), 100 - ($text_width / 2), 55);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "subject_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "subject_first_line"), 100 - ($secondary_text_width / 2), 55);
                     break;
                 case 'v_student_org':
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"student_org_first_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"student_org_first_line"), 100 - ($text_width / 2), 37);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "student_org_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "student_org_first_line"), 100 - ($main_text_width / 2), 37);
 
                     $svg->setFontSVG(self::MERCURY);
                     $svg->setLetterSpacing(0);
                     $svg->setFontSize(8.125);
                     $svg->setFontColor($secondary_text_color);
-                    $text_width = $svg->textDimensions(self::RECOGNIZED_STUDENT_ORGANIZATION)[0];
-                    $svg->addText(self::RECOGNIZED_STUDENT_ORGANIZATION, 100 - ($text_width / 2), 55);
+                    $secondary_text_width = $svg->textDimensions(self::RECOGNIZED_STUDENT_ORGANIZATION)[0];
+                    $svg->addText(self::RECOGNIZED_STUDENT_ORGANIZATION, 100 - ($secondary_text_width / 2), 55);
                     break;
                 case 'v_org_subject_2':
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"org_first_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"org_first_line"), 100 - ($text_width / 2), 37);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_first_line"), 100 - ($main_text_width / 2), 37);
 
                     $svg->setFontSVG(self::MERCURY);
                     $svg->setLetterSpacing(0);
                     $svg->setFontSize(8.125);
                     $svg->setFontColor($secondary_text_color);
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"subject_first_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"subject_first_line"), 100 - ($text_width / 2), 55);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "subject_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "subject_first_line"), 100 - ($secondary_text_width / 2), 55);
 
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"subject_second_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"subject_second_line"), 100 - ($text_width / 2), 64);
+                    $third_width = $svg->textDimensions(self::getLockupFields($lockup, "subject_second_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "subject_second_line"), 100 - ($third_width / 2), 64);
                     break;
                 case 'v_org_2_subject':
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"org_first_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"org_first_line"), 100 - ($text_width / 2), 37);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_first_line"), 100 - ($main_text_width / 2), 37);
 
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"org_second_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"org_second_line"), 100 - ($text_width / 2), 48);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "org_second_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_second_line"), 100 - ($secondary_text_width / 2), 48);
 
                     $svg->setFontSVG(self::MERCURY);
                     $svg->setLetterSpacing(0);
                     $svg->setFontSize(8.125);
                     $svg->setFontColor($secondary_text_color);
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"subject_first_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"subject_first_line"), 100 - ($text_width / 2), 66);
+                    $third_width = $svg->textDimensions(self::getLockupFields($lockup, "subject_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "subject_first_line"), 100 - ($third_width / 2), 66);
                     break;
                 case 'v_org_2_subject_2':
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"org_first_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"org_first_line"), 100 - ($text_width / 2), 37);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_first_line"), 100 - ($main_text_width / 2), 37);
 
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"org_second_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"org_second_line"), 100 - ($text_width / 2), 48);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "org_second_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "org_second_line"), 100 - ($secondary_text_width / 2), 48);
 
                     $svg->setFontSVG(self::MERCURY);
                     $svg->setLetterSpacing(0);
                     $svg->setFontSize(8.125);
                     $svg->setFontColor($secondary_text_color);
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"subject_first_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"subject_first_line"), 100 - ($text_width / 2), 61);
+                    $third_width = $svg->textDimensions(self::getLockupFields($lockup, "subject_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "subject_first_line"), 100 - ($third_width / 2), 61);
 
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"subject_second_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"subject_second_line"), 100 - ($text_width / 2), 70);
+                    $fourth_width = $svg->textDimensions(self::getLockupFields($lockup, "subject_second_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "subject_second_line"), 100 - ($fourth_width / 2), 70);
                     break;
-	            case 'org_recognized_student_2_1': 
-		            $text_width = $svg->textDimensions(self::getLockupFields($lockup,"student_org_first_line"))[0];
-		            $svg->addText(self::getLockupFields($lockup,"student_org_first_line"), 100 - ($text_width / 2), 37);
+                case 'v_student_org_2':
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "student_org_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "student_org_first_line"), 100 - ($main_text_width / 2), 37);
 
-		            $text_width = $svg->textDimensions(self::getLockupFields($lockup,"student_org_second_line"))[0];
-		            $svg->addText(self::getLockupFields($lockup,"student_org_second_line"), 100 - ($text_width / 2), 48);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "student_org_second_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "student_org_second_line"), 100 - ($secondary_text_width / 2), 48);
 
-		            $svg->setFontSVG(self::MERCURY);
-		            $svg->setLetterSpacing(0);
-		            $svg->setFontSize(8.125);
-		            $svg->setFontColor($secondary_text_color);
-		            $text_width = $svg->textDimensions(self::RECOGNIZED_STUDENT_ORGANIZATION)[0];
-		            $svg->addText(self::RECOGNIZED_STUDENT_ORGANIZATION, 100 - ($text_width / 2), 66);
-		            break;
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(8.125);
+                    $svg->setFontColor($secondary_text_color);
+                    $third_width = $svg->textDimensions(self::RECOGNIZED_STUDENT_ORGANIZATION)[0];
+                    $svg->addText(self::RECOGNIZED_STUDENT_ORGANIZATION, 100 - ($third_width / 2), 66);
+                    break;
                 case 'v_acronym':
                     $svg->setFontSize(22);
-                    
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"acronym_first_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"acronym_first_line"), 100 - ($text_width / 2), 32);
+
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "acronym_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "acronym_first_line"), 100 - ($main_text_width / 2), 32);
                     break;
                 case 'v_social':
                     $svg->setFontSize(22);
-                    
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"acronym_first_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"acronym_first_line"), 100 - ($text_width / 2), 32);
+
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "acronym_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "acronym_first_line"), 100 - ($main_text_width / 2), 32);
                     break;
                 case 'v_acronym_subject':
                     $svg->setFontSize(22);
-                    
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"acronym_first_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"acronym_first_line"), 100 - ($text_width / 2), 32);
+
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "acronym_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "acronym_first_line"), 100 - ($main_text_width / 2), 32);
 
                     $svg->setFontSize(16.25);
                     $svg->setFontColor($secondary_text_color);
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"acronym_subject"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"acronym_subject"), 100 - ($text_width / 2), 56.25);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "acronym_subject"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "acronym_subject"), 100 - ($secondary_text_width / 2), 56.25);
                     break;
                 case 'v_acronym_2_subject':
                     $svg->setFontSize(22);
-                    
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"acronym_first_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"acronym_first_line"), 100 - ($text_width / 2), 32);
 
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"acronym_second_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"acronym_second_line"), 100 - ($text_width / 2), 52);
+                    $main_text_width = $svg->textDimensions(self::getLockupFields($lockup, "acronym_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "acronym_first_line"), 100 - ($main_text_width / 2), 32);
+
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "acronym_second_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "acronym_second_line"), 100 - ($secondary_text_width / 2), 52);
 
                     $svg->setFontSize(16.25);
                     $svg->setFontColor($secondary_text_color);
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"acronym_subject"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"acronym_subject"), 100 - ($text_width / 2), 80);
+                    $third_width = $svg->textDimensions(self::getLockupFields($lockup, "acronym_subject"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "acronym_subject"), 100 - ($third_width / 2), 80);
                     break;
                 case 'v_extension':
                     $svg->setFontSize(22);
-                    
-                    $text_width = $svg->textDimensions('EXTENSION')[0];
-                    $svg->addText('EXTENSION', 100 - ($text_width / 2), 32);
+
+                    $main_text_width = $svg->textDimensions('EXTENSION')[0];
+                    $svg->addText('EXTENSION', 100 - ($main_text_width / 2), 32);
 
                     $svg->setFontSVG(self::MERCURY);
                     $svg->setLetterSpacing(0);
                     $svg->setFontSize(8.125);
                     $svg->setFontColor($secondary_text_color);
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"extension"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"extension"), 100 - ($text_width / 2), 60);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "extension"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "extension"), 100 - ($secondary_text_width / 2), 60);
                     break;
                 case 'v_ncta':
                     $svg->setFontSize(22);
-                    
-                    $text_width = $svg->textDimensions('NCTA')[0];
-                    $svg->addText('NCTA', 100 - ($text_width / 2), 32);
+
+                    $main_text_width = $svg->textDimensions('NCTA')[0];
+                    $svg->addText('NCTA', 100 - ($main_text_width / 2), 32);
 
                     $svg->setFontSVG(self::MERCURY);
                     $svg->setLetterSpacing(0);
                     $svg->setFontSize(8.125);
                     $svg->setFontColor($secondary_text_color);
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"subject_first_line"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"subject_first_line"), 100 - ($text_width / 2), 60);
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "subject_first_line"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "subject_first_line"), 100 - ($secondary_text_width / 2), 60);
                     break;
                 case 'v_extension_4h':
                     $svg->setFontSize(28);
-                    
-                    $text_width = $svg->textDimensions('EXTENSION')[0];
-                    $svg->addText('EXTENSION', 100 - ($text_width / 2), 32);
+
+                    $main_text_width = $svg->textDimensions('EXTENSION')[0];
+                    $svg->addText('EXTENSION', 100 - ($main_text_width / 2), 32);
 
                     $svg->setFontSVG(self::MERCURY);
                     $svg->setLetterSpacing(0);
                     $svg->setFontSize(8.125);
                     $svg->setFontColor($secondary_text_color);
-                    $text_width = $svg->textDimensions(self::getLockupFields($lockup,"extension"))[0];
-                    $svg->addText(self::getLockupFields($lockup,"extension"), 100 - ($text_width / 2), 66);
-                    break;
+                    $secondary_text_width = $svg->textDimensions(self::getLockupFields($lockup, "extension"))[0];
+                    $svg->addText(self::getLockupFields($lockup, "extension"), 100 - ($secondary_text_width / 2), 66);
             }
+
+
             # set the SVG dimensions
+
+            $max_width = max($main_text_width, $secondary_text_width, $third_width, $fourth_width);
+
+            # for width
+            switch ($template) {
+                case 'v_social':
+                    $width = 100;
+                    $x = 50;
+                    break;
+                case 'v_extension_4h':
+                    if ($preview) {
+                        if ($max_width > 90) {
+                            $x = 50 - max(15, ($max_width / 3));
+                            $width = 100 + ($max_width/2);
+                        } else {
+                            $x = 50;
+                            $width = 100;
+                        }
+                    }
+                    break;
+                default:
+                    if ($preview) {
+                        if ($max_width > 45) {
+                            $x = 90 - ($max_width / 2);
+                            $width = 20 + ($max_width);
+                        } else {
+                            $x = 80;
+                            $width = 40;
+                        }
+                    }
+            }
+
+            #for height
             switch ($template) {
                 case 'v_org_2_subject_2':
                     $height = 88;
@@ -518,9 +556,7 @@ class LockupsGeneratorController extends AbstractController
                     break;
                 case 'v_social':
                     $height = 100;
-                    $width = 100;
                     $y = -20;
-                    $x = 50;
                     break;
             }
 
@@ -549,7 +585,7 @@ class LockupsGeneratorController extends AbstractController
                 $svg->addPath(self::RIGHT_CLOVER_H_4, array('fill' => $clover_h_color, 'transform' => 'translate(56, 0)'));
 
                 $svg->addPath(self::CENTER_DIVIDER, array('fill' => $secondary_text_color, 'transform' => 'translate(50.5 0.1)', 'stroke' => $secondary_text_color, 'stroke-width' => '0.5pt'));
-                
+
                 if (!($style == 'blk' && $rev)) {
                     $svg->addPath(self::LEFT_N_R_FILL, array('fill' => $n_secondary_color, 'transform' => 'translate(50.5 0.1)'));
                     $svg->addPath(self::LEFT_N_SERIF, array('fill' => $n_secondary_color, 'transform' => 'translate(50.5 0.1)'));
@@ -581,7 +617,6 @@ class LockupsGeneratorController extends AbstractController
 
         #generate the SVG
         $finalSVG = $svg->asXML();
-        echo $finalSVG;
         return $finalSVG;
     }
 }
