@@ -28,7 +28,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Length;
 use WDN\Bundle\FrameworkBundle\Controller\BaseController;
-use phpCAS;
+
+use App\Service\Auth;
+use App\Service\LockupsGenerator;
 
 
 class IndexController extends BaseController
@@ -36,8 +38,9 @@ class IndexController extends BaseController
     /**
      * @Route("/", name="homePage", methods={"GET"})
      */
-    public function homePage(ManagerRegistry $doctrine): Response
+    public function homePage(ManagerRegistry $doctrine, Auth $auth): Response
     {
+        $auth->requireAuth();
         $lockups = $doctrine->getRepository(LockupTemplates::class)->findAll();
         $lockups_fields = $doctrine->getRepository(LockupTemplatesFields::class)->findAll();
         $lockups_categories = $doctrine->getRepository(LockupTemplatesCategories::class)->findAll();
@@ -60,8 +63,9 @@ class IndexController extends BaseController
     /**
      * @Route("/", name="addLockup", methods={"POST"})
      */
-    public function addLockup(Request $request, ManagerRegistry $doctrine, ValidatorInterface $validator, )
+    public function addLockup(Request $request, ManagerRegistry $doctrine, ValidatorInterface $validator, Auth $auth, LockupsGenerator $lockupsGenerator)
     {
+        $auth->requireAuth();
         $fields = $doctrine->getRepository(LockupTemplatesFields::class)->findAll();
 
         $entityManager = $doctrine->getManager();
@@ -73,11 +77,10 @@ class IndexController extends BaseController
         $arr = [];
         $count = 0;
 
-
         $lockups->setApprover($approver);
         $lockups->setTemplate($template);
         $lockups->setStatus(0);
-        $lockups->setUser(0);
+        $lockups->setUser($auth->getUser());
         $errors = $validator->validate($lockups);
         if (count($errors) > 0) {
             return $this->render('base.html.twig', [
@@ -98,14 +101,9 @@ class IndexController extends BaseController
         }
 
         $lockup_fields = $doctrine->getRepository(LockupsFields::class)->findAll($lockups->getId());
-        $svg = new Svg();
-        $generatedSVG = LockupsGeneratorController::createPreviewLockup($template->getSlug(), $arr, $template->getStyle());
-        $svg->setValue($generatedSVG);
-        $lockups->setPreview($generatedSVG);
         $entityManager->persist($lockups);
-        $entityManager->persist($svg);
         $entityManager->flush();
-
+        $lockupsGenerator->createPreview($lockups->getId());
         // save it in the database and redirect to the manage lockups page
         return $this->redirectToRoute('manageLockups', [], 302);
     }
@@ -123,18 +121,15 @@ class IndexController extends BaseController
     /**
      * @Route("/lockups/manage", name="manageLockups")
      */
-    public function manageLockups(ManagerRegistry $doctrine): Response
-    { 
-        Auth::setUpClient();
-        Auth::autoLogin();
-        Auth::authenticate();
-        $user = Auth::getUser();
-        $product = $doctrine->getRepository(Lockups::class)->findAll();
+    public function manageLockups(ManagerRegistry $doctrine, Auth $auth): Response
+    {
+        $auth->requireAuth();
+        $product = $doctrine->getRepository(Lockups::class)->findBy(['user' => $auth->getUser()]);
         return $this->render('base.html.twig', [
             'page_template' => "manageLockups.html.twig",
             'page_name' => "ManageLockups",
             'lockups_array' => $product,
-            'user' => $user
+            'user' => $auth->getUsername()
         ]);
     }
 
@@ -157,14 +152,15 @@ class IndexController extends BaseController
         return $this->redirectToRoute('manageLockups', [], 302);
     }
     /**
-     * @Route("/lockups/edit/{id}", name="editLockups")
+     * @Route("/lockups/preview/{id}", name="previewLockups")
      */
-    public function editLockups(int $id): Response
+    public function previewLockups(int $id, ManagerRegistry $doctrine): Response
     {
-
+        $lockup = $doctrine->getRepository(Lockups::class)->find($id);
         return $this->render('base.html.twig', [
-            'page_template' => "editLockups.html.twig",
-            'page_name' => "ManageLockups"
+            'page_template' => "previewLockups.html.twig",
+            'page_name' => "ManageLockups",
+            'SVG' => $lockup
         ]);
     }
     /**

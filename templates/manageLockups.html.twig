@@ -1,7 +1,7 @@
 {% block body %}
 <div class="dcf-wrapper dcf-bleed dcf-pb-7 unl-bg-cream">
-<p>Welcome {{ user }} </p>
     <h3>Manage your lockups</h3>
+    <p>Welcome {{ user }} </p>
     <table class="dcf-table dcf-table-bordered dcf-table-responsive dcf-table-striped dcf-w-100%">
         <tr>
             <th>
@@ -26,17 +26,17 @@
                 {{item.getId}}
             </td>
             <td>
-                {{item.getPreview | raw}}
+            <div class="table-preview">{{ (item.getTemplate.getStyle == 'h') ? item.getPreviewH | raw : item.getPreviewV | raw }}</div>
             </td>
             <td>
                 {{item.getApprover}}
             </td>
             <td>
-                <p><strong>Communicator</strong>: Awaiting Approval<br></p>
-                <strong>Creative</strong>: Awaiting Approval
+            {{(item.getStatus == 0) ? "<p><strong>Communicator</strong>: Awaiting Approval<br></p>
+                <p><strong>Creative</strong>: Awaiting Approval</p>" | raw : "" | raw}}
             </td>
             <td>
-                <a href="/lockups/edit/{{item.getId}}"><button class="dcf-btn dcf-btn-secondary">View</button></a>
+                <a href="/lockups/preview/{{item.getId}}"><button class="dcf-btn dcf-btn-secondary">View</button></a>
                 <form action="/lockups/delete/" method="POST" style="display: inline;">
                     <button type="submit" class="dcf-btn dcf-btn-primary">Delete</button>
                     <input type="hidden" name="id" value="{{item.getId}}">

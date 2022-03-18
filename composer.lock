@@ -4,50 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "30bf6ec46f967661bea5896640568dae",
+    "content-hash": "dd9e3cf0ee1b84dccf70a072121c5354",
     "packages": [
-        {
-            "name": "avirizal51/easy-svg",
-            "version": "dev-main",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/avirizal51/easy-svg.git",
-                "reference": "61afc666f7646e97b9523215d9b9bd9ee2eac1a9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/avirizal51/easy-svg/zipball/61afc666f7646e97b9523215d9b9bd9ee2eac1a9",
-                "reference": "61afc666f7646e97b9523215d9b9bd9ee2eac1a9",
-                "shasum": ""
-            },
-            "require": {
-                "ext-simplexml": "*",
-                "ext-xmlreader": "*",
-                "php": ">=7.4.0"
-            },
-            "default-branch": true,
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "avirizal51\\EasySvg\\": "src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Abhi Rijal",
-                    "email": "29809542+avirizal51@users.noreply.github.com"
-                }
-            ],
-            "description": "Generate SVG",
-            "support": {
-                "source": "https://github.com/avirizal51/easy-svg/tree/main",
-                "issues": "https://github.com/avirizal51/easy-svg/issues"
-            },
-            "time": "2022-03-15T16:52:49+00:00"
-        },
         {
             "name": "digitalcampusframework/dcf-symfony-framework",
             "version": "dev-main",
@@ -8099,8 +8057,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "digitalcampusframework/dcf-symfony-framework": 20,
-        "unl/wdn-symfony-framework": 20,
-        "avirizal51/easy-svg": 20
+        "unl/wdn-symfony-framework": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

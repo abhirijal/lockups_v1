@@ -19,15 +19,18 @@ class Lockups
     #[ORM\Column(type: 'integer')]
     private $status;
 
-    #[ORM\Column(type: 'integer')]
-    private $user;
-
     #[ORM\ManyToOne(targetEntity: LockupTemplates::class)]
     #[ORM\JoinColumn(nullable: false, referencedColumnName:"id")]
     private $template;
 
+    #[ORM\ManyToOne(targetEntity: Users::class)]
+    private $user;
+
     #[ORM\Column(type: 'text', nullable: true)]
-    private $preview;
+    private $PreviewH;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private $PreviewV;
 
     public function getId(): ?int
     {
@@ -58,18 +61,6 @@ class Lockups
         return $this;
     }
 
-    public function getUser(): ?int
-    {
-        return $this->user;
-    }
-
-    public function setUser(int $user): self
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
     public function getTemplate(): ?LockupTemplates
     {
         return $this->template;
@@ -82,14 +73,38 @@ class Lockups
         return $this;
     }
 
-    public function getPreview()
+    public function getUser(): ?Users
     {
-        return $this->preview;
+        return $this->user;
     }
 
-    public function setPreview($preview): self
+    public function setUser(?Users $user): self
     {
-        $this->preview = $preview;
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getPreviewH(): ?string
+    {
+        return $this->PreviewH;
+    }
+
+    public function setPreviewH(?string $PreviewH): self
+    {
+        $this->PreviewH = $PreviewH;
+
+        return $this;
+    }
+
+    public function getPreviewV(): ?string
+    {
+        return $this->PreviewV;
+    }
+
+    public function setPreviewV(?string $PreviewV): self
+    {
+        $this->PreviewV = $PreviewV;
 
         return $this;
     }

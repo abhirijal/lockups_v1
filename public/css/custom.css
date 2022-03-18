@@ -44,3 +44,22 @@
     padding: 10px;
     border-radius: 6px;
 }
+
+.horiz .lockups-preview .preview {
+    width: 100%;
+    max-width: 300px;
+}
+.vert .lockups-preview .preview {
+    width: 100%;
+    max-width: 200px;
+}
+
+.table-preview .preview {
+    max-height: 150px;
+}
+
+.lockups-preview {
+    background-color: #fff;
+    display:inline-block;
+    border: 3px dashed var(--b);
+}

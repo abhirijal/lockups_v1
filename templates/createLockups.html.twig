@@ -3,7 +3,7 @@
 
 <div class="dcf-wrapper dcf-bleed dcf-pb-7">
     <div class="dcf-grid dcf-1st@md">
-        <div class="dcf-col-25%-start dcf-rounded dcf-p-6">
+        <div class="dcf-col-25%-start dcf-rounded dcf-pr-6 dcf-pl-6 dcf-pb-6">
             <h5 class="dcf-mb-5">Select your template</h5>
             <div class="dcf-mb-6">
             <div class="dcf-grid dcf-grid-halves dcf-mb-5">
@@ -48,7 +48,6 @@
             <h5 class="dcf-mb-6">Preview</h5>
             <div>
                 {% for item in lockups %}
-                {% if item.getLinksTo != null%}
                 <div id="{{item.getId}}svg" style="display:{{ (item.getId == 1) ? " block" : "none" }}"
                 class="svgTabs">
                 <div class="dcf-grid dcf-grid-halves">                            
@@ -60,6 +59,7 @@
                             {{item.getSvg | raw}}
                         </div>
                     </div>
+                    {% if item.getLinksTo != null%}
                     <div class="d-flex" style="background-color: #fff;">
                         <div class="dcf-flex-col align-self-center dcf-txt-center w-100">
                             {% for subitem in lockups %}
@@ -70,18 +70,10 @@
                             {% endfor %}
                         </div>
                     </div>
+                    {% endif %}
                 </div>
                 <p class="dcf-mt-5 dcf-txt-3xs"> <i class="dxf-txt-left">{{item.getDescription}}</i></p>
             </div>
-                {% else %}
-                <div id="{{item.getId}}svg" style="display:{{ (item.getId == 1) ? " block" : "none" }}"
-                class="svgTabs">
-                <div class="dcf-txt-center">
-                    {{item.getSvg | raw}}
-                </div>
-                <p class="dcf-mt-5 dcf-txt-3xs"> <i class="dxf-txt-left">{{item.getDescription}}</i></p>
-            </div>
-            {% endif %}
                 {% endfor %}
             </div>
             <form method="POST" action="/">

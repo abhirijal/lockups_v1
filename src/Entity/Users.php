@@ -31,6 +31,9 @@ class Users
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $OrganizationAcronym;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $email;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -104,6 +107,18 @@ class Users
     public function setOrganizationAcronym(?string $OrganizationAcronym): self
     {
         $this->OrganizationAcronym = $OrganizationAcronym;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): self
+    {
+        $this->email = $email;
 
         return $this;
     }
