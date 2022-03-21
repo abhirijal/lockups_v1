@@ -5,8 +5,7 @@ namespace App\Service;
 use App\Service\EasySVG;
 
 
-class SvgGenerator
-{
+class SvgGenerator {
     const SCARLET = '#d00000';
     const WHITE = '#ffffff';
     const BLACK = '#000000';
@@ -53,7 +52,7 @@ class SvgGenerator
 
     const CENTER_DIVIDER = "M51,0 L51,39 Z";
 
-    const RECOGNIZED_STUDENT_ORGANIZATION = 'Recognized Student Organization';
+	const RECOGNIZED_STUDENT_ORGANIZATION = 'Recognized Student Organization';
 
     public function getLockupFields($object, $name) : string
     {
@@ -67,29 +66,22 @@ class SvgGenerator
         }
         return "";
     }
+
     public function createLockup($template, $lockup, $orient = 'h', $style = 'RGB', $rev = false, $preview = false) : string
     {
-        $Svg = new EasySVG;
-        #set initial colors
+        $svg = new EasySVG();
         $main_text_color = self::SCARLET;
         $secondary_text_color = self::BLACK;
         $n_main_color = self::SCARLET;
         $n_secondary_color = self::WHITE;
         $clover_color = self::FOUR_H_GREEN;
-        $clover_h_color = self::WHITE;
+        $clover_h_color = NULL;
 
-        #define the initial height and width of the SVG
-        $height = 80;
-        $width = 200;
-        $x = 0; 
-        $y = 0;
-
-        #set colors according to the style of the lockups
         switch ($style) {
             case 'RGB':
-                $main_text_color = self::WHITE;
-                $secondary_text_color = self::WHITE;
                 if ($template == 'v_social') {
+                    $main_text_color = self::WHITE;
+                    $secondary_text_color = self::WHITE;
                     $n_main_color = self::WHITE;
                     $n_secondary_color = self::SCARLET;
                     break;
@@ -97,29 +89,45 @@ class SvgGenerator
                 if (!$rev) {
                     $main_text_color = self::SCARLET;
                     $secondary_text_color = self::BLACK;
+                    $n_main_color = self::SCARLET;
+                    $n_secondary_color = self::WHITE;
+                    $clover_color = self::FOUR_H_GREEN;
                 } else {
+                    $main_text_color = self::WHITE;
+                    $secondary_text_color = self::WHITE;
+                    $n_main_color = self::SCARLET;
+                    $n_secondary_color = self::WHITE;
                     $clover_color = self::WHITE;
                 }
                 break;
             case 'pms186cp':
-                $n_main_color = self::PANTONE_RED;
                 if (!$rev) {
                     $main_text_color = self::PANTONE_RED;
                     $secondary_text_color = self::PANTONE_RED;
+                    $n_main_color = self::PANTONE_RED;
+                    $n_secondary_color = self::WHITE;
+                    $clover_color = self::FOUR_H_GREEN;
                 } else {
                     $main_text_color = self::WHITE;
                     $secondary_text_color = self::WHITE;
+                    $n_main_color = self::PANTONE_RED;
+                    $n_secondary_color = self::WHITE;
                     $clover_color = self::WHITE;
                     $clover_h_color = self::BLACK;
                 }
                 break;
             case '4c':
-                $n_main_color = self::CMYK_RED;
                 if (!$rev) {
                     $main_text_color = self::CMYK_RED;
+                    $secondary_text_color = self::BLACK;
+                    $n_main_color = self::CMYK_RED;
+                    $n_secondary_color = self::WHITE;
+                    $clover_color = self::FOUR_H_GREEN;
                 } else {
                     $main_text_color = self::WHITE;
                     $secondary_text_color = self::WHITE;
+                    $n_main_color = self::CMYK_RED;
+                    $n_secondary_color = self::WHITE;
                     $clover_color = self::WHITE;
                     $clover_h_color = self::BLACK;
                 }
@@ -127,7 +135,9 @@ class SvgGenerator
             case 'blk':
                 if (!$rev) {
                     $main_text_color = self::BLACK;
+                    $secondary_text_color = self::BLACK;
                     $n_main_color = self::BLACK;
+                    $n_secondary_color = self::WHITE;
                     $clover_color = self::BLACK;
                 } else {
                     $main_text_color = self::WHITE;
@@ -141,423 +151,524 @@ class SvgGenerator
                 break;
         }
 
-        #set initial EasySVG variables
-        $Svg->setFontSVG(self::TUNGSTEN);
-        $Svg->setLetterSpacing(0.05);
-        $Svg->setFontSize(12);
-        $Svg->setFontColor($main_text_color);
+        if (!isset($clover_h_color)) {
+            $clover_h_color = $n_secondary_color;
+        }
+
+        if ($preview) {
+            $svg->addAttribute("class", "preview");
+        }
+
+        $height = 200;
+        $width = 80;
+        $x = 0;
+        $y = 0;
+
         if ($orient == 'h') {
-            $height = 36;
-            #add the texts for horizontal orientation lockups
             switch ($template) {
                 case 'h_org':
-                    $Svg->addText($this->getLockupFields($lockup, "org_first_line"), 44, 7.75);
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(12);
+                    $svg->setFontColor($main_text_color);
+                    $svg->addText($this->getLockupFields($lockup, "org_first_line"), 44, 7.75);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
 
-                    $width = ($main_text_width + 44);
+                    $svg->addAttribute('viewBox', "0 0 " . ($text_width + 44) . " 36");
+                    $height = 36;
+                    $width = $text_width + 44;
+                    if (!$preview) {
+                        $svg->addAttribute('height', 36);
+                        $svg->addAttribute('width', $text_width + 44);
+                    }
                     break;
                 case 'h_org_2':
-                    $Svg->addText($this->getLockupFields($lockup, "org_first_line"), 44, 2.25);
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(12);
+                    $svg->setFontColor($main_text_color);
+                    $svg->addText($this->getLockupFields($lockup, "org_first_line"), 44, 2.25);
+                    $main_text_width = $svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
 
-                    $Svg->addText($this->getLockupFields($lockup, "org_second_line"), 44, 13.25);
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_second_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "org_second_line"), 44, 13.25);
+                    $secondary_text_width = $svg->textDimensions($this->getLockupFields($lockup, "org_second_line"))[0];
 
-                    // $Svg->addText("org second", 44, 13.25);
-                    // $secondary_text_width = $Svg->textDimensions("org second")[0];
-
-
+                    $svg->addAttribute('viewBox', "0 0 " . (max($main_text_width, $secondary_text_width) + 44) . " 36");
+                    $height = 36;
                     $width = max($main_text_width, $secondary_text_width) + 44;
+                    if (!$preview) {
+                        $svg->addAttribute('height', 36);
+                        $svg->addAttribute('width', max($main_text_width, $secondary_text_width) + 44);
+                    }
                     break;
                 case 'h_org_subject':
-                    $Svg->addText($this->getLockupFields($lockup, "org_first_line"), 44, 7.75);
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(12);
+                    $svg->setFontColor($main_text_color);
+                    $svg->addText($this->getLockupFields($lockup, "org_first_line"), 44, 7.75);
+                    $main_text_width = $svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
 
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(8.125);
-                    $Svg->setFontColor($secondary_text_color);
-                    $Svg->addText($this->getLockupFields($lockup, "subject_first_line"), 44, 26);
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(8.125);
+                    $svg->setFontColor($secondary_text_color);
+                    $svg->addText($this->getLockupFields($lockup, "subject_first_line"), 44, 26);
+                    $secondary_text_width = $svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
 
+                    $svg->addAttribute('viewBox', "0 0 " . (max($main_text_width, $secondary_text_width) + 44) . " 38");
                     $height = 38;
                     $width = max($main_text_width, $secondary_text_width) + 44;
+                    if (!$preview) {
+                        $svg->addAttribute('height', 38);
+                        $svg->addAttribute('width', max($main_text_width, $secondary_text_width) + 44);
+                    }
                     break;
                 case 'h_student_org':
-                    $Svg->addText($this->getLockupFields($lockup, "student_org_first_line"), 44, 7.75);
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "student_org_first_line"))[0];
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(12);
+                    $svg->setFontColor($main_text_color);
+                    $svg->addText($this->getLockupFields($lockup, "student_org_first_line"), 44, 7.75);
+                    $main_text_width = $svg->textDimensions($this->getLockupFields($lockup, "student_org_first_line"))[0];
 
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(8.125);
-                    $Svg->setFontColor($secondary_text_color);
-                    $Svg->addText(self::RECOGNIZED_STUDENT_ORGANIZATION, 44, 26);
-                    $secondary_text_width = $Svg->textDimensions(self::RECOGNIZED_STUDENT_ORGANIZATION)[0];
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(8.125);
+                    $svg->setFontColor($secondary_text_color);
+                    $svg->addText(self::RECOGNIZED_STUDENT_ORGANIZATION, 44, 26);
+                    $secondary_text_width = $svg->textDimensions(self::RECOGNIZED_STUDENT_ORGANIZATION)[0];
 
+                    $svg->addAttribute('viewBox', "0 0 " . (max($main_text_width, $secondary_text_width) + 44) . " 38");
                     $height = 38;
                     $width = max($main_text_width, $secondary_text_width) + 44;
+                    if (!$preview) {
+                        $svg->addAttribute('height', 38);
+                        $svg->addAttribute('width', max($main_text_width, $secondary_text_width) + 44);
+                    }
                     break;
                 case 'h_org_subject_2':
-                    $Svg->addText($this->getLockupFields($lockup, "org_first_line"), 44, -5.8);
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(12);
+                    $svg->setFontColor($main_text_color);
+                    $svg->addText($this->getLockupFields($lockup, "org_first_line"), 44, -5.8);
+                    $main_text_width = $svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
 
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(8.125);
-                    $Svg->setFontColor($secondary_text_color);
-                    $Svg->addText($this->getLockupFields($lockup, "subject_first_line"), 44, 17);
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(8.125);
+                    $svg->setFontColor($secondary_text_color);
+                    $svg->addText($this->getLockupFields($lockup, "subject_first_line"), 44, 17);
+                    $secondary_text_width = $svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
 
-                    $Svg->addText($this->getLockupFields($lockup, "subject_second_line"), 44, 26);
-                    $third_width = $Svg->textDimensions($this->getLockupFields($lockup, "subject_second_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "subject_second_line"), 44, 26);
+                    $third_width = $svg->textDimensions($this->getLockupFields($lockup, "subject_second_line"))[0];
 
+                    $svg->addAttribute('viewBox', "0 0 " . (max($main_text_width, $secondary_text_width, $third_width) + 44) . " 38");
                     $height = 38;
                     $width = max($main_text_width, $secondary_text_width, $third_width) + 44;
+                    if (!$preview) {
+                        $svg->addAttribute('height', 38);
+                        $svg->addAttribute('width', max($main_text_width, $secondary_text_width, $third_width) + 44);
+                    }
                     break;
                 case 'h_org_2_subject':
-                    $Svg->addText($this->getLockupFields($lockup, "org_first_line"), 44, -5.8);
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(12);
+                    $svg->setFontColor($main_text_color);
+                    $svg->addText($this->getLockupFields($lockup, "org_first_line"), 44, -5.8);
+                    $main_text_width = $svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
 
-                    $Svg->addText($this->getLockupFields($lockup, "org_second_line"), 44, 5.2);
-                    $third_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_second_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "org_second_line"), 44, 5.2);
+                    $third_width = $svg->textDimensions($this->getLockupFields($lockup, "org_second_line"))[0];
 
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(8.125);
-                    $Svg->setFontColor($secondary_text_color);
-                    $Svg->addText($this->getLockupFields($lockup, "subject_first_line"), 44, 26);
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(8.125);
+                    $svg->setFontColor($secondary_text_color);
+                    $svg->addText($this->getLockupFields($lockup, "subject_first_line"), 44, 26);
+                    $secondary_text_width = $svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
 
+                    $svg->addAttribute('viewBox', "0 0 " . (max($main_text_width, $secondary_text_width, $third_width) + 44) . " 38");
                     $height = 38;
                     $width = max($main_text_width, $secondary_text_width, $third_width) + 44;
+                    if (!$preview) {
+                        $svg->addAttribute('height', 38);
+                        $svg->addAttribute('width', max($main_text_width, $secondary_text_width, $third_width) + 44);
+                    }
                     break;
                 case 'h_org_2_subject_2':
-                    $Svg->addText($this->getLockupFields($lockup, "org_first_line"), 44, -5.8);
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(12);
+                    $svg->setFontColor($main_text_color);
+                    $svg->addText($this->getLockupFields($lockup, "org_first_line"), 44, -5.8);
+                    $main_text_width = $svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
 
-                    $Svg->addText($this->getLockupFields($lockup, "org_second_line"), 44, 4.2);
-                    $third_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_second_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "org_second_line"), 44, 4.2);
+                    $third_width = $svg->textDimensions($this->getLockupFields($lockup, "org_second_line"))[0];
 
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(7);
-                    $Svg->setFontColor($secondary_text_color);
-                    $Svg->addText($this->getLockupFields($lockup, "subject_first_line"), 44, 19);
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(7);
+                    $svg->setFontColor($secondary_text_color);
+                    $svg->addText($this->getLockupFields($lockup, "subject_first_line"), 44, 19);
+                    $secondary_text_width = $svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
 
-                    $Svg->addText($this->getLockupFields($lockup, "subject_second_line"), 44, 27);
-                    $fourth_width = $Svg->textDimensions($this->getLockupFields($lockup, "subject_second_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "subject_second_line"), 44, 27);
+                    $fourth_width = $svg->textDimensions($this->getLockupFields($lockup, "subject_second_line"))[0];
 
+                    $svg->addAttribute('viewBox', "0 0 " . (max($main_text_width, $secondary_text_width, $third_width, $fourth_width) + 44) . " 38");
                     $height = 38;
                     $width = max($main_text_width, $secondary_text_width, $third_width, $fourth_width) + 44;
+                    if (!$preview) {
+                        $svg->addAttribute('height', 38);
+                        $svg->addAttribute('width', max($main_text_width, $secondary_text_width, $third_width, $fourth_width) + 44);
+                    }
                     break;
-                case 'h_student_org_2':
-                    $Svg->addText($this->getLockupFields($lockup, "student_org_first_line"), 44, -5.8);
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "student_org_first_line"))[0];
+	            case 'h_student_org_2':
+		            $svg->setFontSVG(self::TUNGSTEN);
+		            $svg->setLetterSpacing(0.05);
+		            $svg->setFontSize(12);
+		            $svg->setFontColor($main_text_color);
+		            $svg->addText($this->getLockupFields($lockup, "student_org_first_line"), 44, -5.8);
+		            $main_text_width = $svg->textDimensions($this->getLockupFields($lockup, "student_org_first_line"))[0];
 
-                    $Svg->addText($this->getLockupFields($lockup, "student_org_second_line"), 44, 5.2);
-                    $third_width = $Svg->textDimensions($this->getLockupFields($lockup, "student_org_second_line"))[0];
+		            $svg->addText($this->getLockupFields($lockup, "student_org_second_line"), 44, 5.2);
+		            $third_width = $svg->textDimensions($this->getLockupFields($lockup, "student_org_second_line"))[0];
 
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(8.125);
-                    $Svg->setFontColor($secondary_text_color);
-                    $Svg->addText(self::RECOGNIZED_STUDENT_ORGANIZATION, 44, 26);
-                    $secondary_text_width = $Svg->textDimensions(self::RECOGNIZED_STUDENT_ORGANIZATION)[0];
+		            $svg->setFontSVG(self::MERCURY);
+		            $svg->setLetterSpacing(0);
+		            $svg->setFontSize(8.125);
+		            $svg->setFontColor($secondary_text_color);
+		            $svg->addText(self::RECOGNIZED_STUDENT_ORGANIZATION, 44, 26);
+		            $secondary_text_width = $svg->textDimensions(self::RECOGNIZED_STUDENT_ORGANIZATION)[0];
 
-                    $height = 38;
-                    $width = max($main_text_width, $secondary_text_width, $third_width) + 44;
-                    break;
+		            $svg->addAttribute('viewBox', "0 0 " . (max($main_text_width, $secondary_text_width, $third_width) + 44) . " 38");
+		            $height = 38;
+		            $width = max($main_text_width, $secondary_text_width, $third_width) + 44;
+		            if (!$preview) {
+			            $svg->addAttribute('height', 38);
+			            $svg->addAttribute('width', max($main_text_width, $secondary_text_width, $third_width) + 44);
+		            }
+		            break;
                 case 'h_acronym':
-                    $Svg->setFontSize(22);
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(22);
+                    $svg->setFontColor($main_text_color);
+                    $svg->addText($this->getLockupFields($lockup, "acronym_first_line"), 44, -0.5);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "acronym_first_line"))[0];
 
-                    $Svg->addText($this->getLockupFields($lockup, "acronym_first_line"), 44, -0.5);
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "acronym_first_line"))[0];
-
-                    $height = 36;
-                    $width = $main_text_width + 44;
+                    $svg->addAttribute('viewBox', "0 0 " . ($text_width + 44) . " 36");
+                    $height = 38;
+                    $width = $text_width + 44;
+                    if (!$preview) {
+                        $svg->addAttribute('height', 36);
+                        $svg->addAttribute('width', $text_width + 44);
+                    }
                     break;
                 case 'h_acronym_subject':
-                    $Svg->setFontSize(22);
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(22);
+                    $svg->setFontColor($main_text_color);
+                    $svg->addText($this->getLockupFields($lockup, "acronym_first_line"), 44, -10.5);
+                    $main_text_width = $svg->textDimensions($this->getLockupFields($lockup, "acronym_first_line"))[0];
 
-                    $Svg->addText($this->getLockupFields($lockup, "acronym_first_line"), 44, -10.5);
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "acronym_first_line"))[0];
+                    $svg->setFontSize(16.25);
+                    $svg->setFontColor($secondary_text_color);
+                    $svg->addText($this->getLockupFields($lockup, "acronym_subject"), 44, 16.25);
+                    $secondary_text_width = $svg->textDimensions($this->getLockupFields($lockup, "acronym_subject"))[0];
 
-                    $Svg->setFontSize(16.25);
-                    $Svg->setFontColor($secondary_text_color);
-                    $Svg->addText($this->getLockupFields($lockup, "acronym_subject"), 44, 16.25);
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "acronym_subject"))[0];
-
+                    $svg->addAttribute('viewBox', "0 0 " . (max($main_text_width, $secondary_text_width) + 44) . " 40");
                     $height = 40;
                     $width = max($main_text_width, $secondary_text_width) + 44;
+                    if (!$preview) {
+                        $svg->addAttribute('height', 40);
+                        $svg->addAttribute('width', max($main_text_width, $secondary_text_width) + 44);
+                    }
                     break;
                 case 'h_extension':
-                    $Svg->setFontSize(22);
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(22);
+                    $svg->setFontColor($main_text_color);
+                    $svg->addText('EXTENSION', 44, -0.5);
+                    $main_text_width = $svg->textDimensions('EXTENSION')[0];
 
-                    $Svg->addText('EXTENSION', 44, -0.5);
-                    $main_text_width = $Svg->textDimensions('EXTENSION')[0];
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(8.125);
+                    $svg->setFontColor($secondary_text_color);
+                    $svg->addText($this->getLockupFields($lockup, "extension"), 44, 26);
+                    $secondary_text_width = $svg->textDimensions($this->getLockupFields($lockup, "extension"))[0];
 
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(8.125);
-                    $Svg->setFontColor($secondary_text_color);
-                    $Svg->addText($this->getLockupFields($lockup, "extension"), 44, 26);
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "extension"))[0];
-
+                    $svg->addAttribute('viewBox', "0 0 " . (max($main_text_width, $secondary_text_width) + 44) . " 38");
                     $height = 38;
                     $width = max($main_text_width, $secondary_text_width) + 44;
+                    if (!$preview) {
+                        $svg->addAttribute('height', 38);
+                        $svg->addAttribute('width', max($main_text_width, $secondary_text_width) + 44);
+                    }
                     break;
                 case 'h_ncta':
-                    $Svg->setFontSize(22);
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(22);
+                    $svg->setFontColor($main_text_color);
+                    $svg->addText('NCTA', 44, -0.5);
+                    $main_text_width = $svg->textDimensions('NCTA')[0];
 
-                    $Svg->addText('NCTA', 44, -0.5);
-                    $main_text_width = $Svg->textDimensions('NCTA')[0];
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(8.125);
+                    $svg->setFontColor($secondary_text_color);
+                    $svg->addText($this->getLockupFields($lockup, "subject_first_line"), 44, 26);
+                    $secondary_text_width = $svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
 
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(8.125);
-                    $Svg->setFontColor($secondary_text_color);
-                    $Svg->addText($this->getLockupFields($lockup, "subject_first_line"), 44, 26);
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
-
+                    $svg->addAttribute('viewBox', "0 0 " . (max($main_text_width, $secondary_text_width) + 44) . " 38");
                     $height = 38;
                     $width = max($main_text_width, $secondary_text_width) + 44;
+                    if (!$preview) {
+                        $svg->addAttribute('height', 38);
+                        $svg->addAttribute('width', max($main_text_width, $secondary_text_width) + 44);
+                    }
                     break;
             }
-            #add logo
-            $Svg->addPath(self::HORIZ_N_R_CIRCLE, array('fill' => $n_main_color));
-            $Svg->addPath(self::HORIZ_N_FILL, array('fill' => $n_main_color));
-            $Svg->addPath(self::HORIZ_N_OUTLINE_R, array('fill' => $n_main_color));
-            if (!($style == 'blk' && $rev)) {
-                $Svg->addPath(self::HORIZ_N_R_FILL, array('fill' => $n_secondary_color));
-                $Svg->addPath(self::HORIZ_N_SERIF, array('fill' => $n_secondary_color));
-            }
-        } else if ($orient == 'v') {
-            $main_text_width = 0;
-            $secondary_text_width = 0;
-            $third_width = 0;
-            $fourth_width = 0;
-            switch ($template) {
-                    #add the texts for vertical orientation
-                case 'v_org':
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "org_first_line"), 100 - ($main_text_width / 2), 37);
 
-                    if ($preview) {
-                        $height = 60;
-                    }
+            $svg->addPath(self::HORIZ_N_R_CIRCLE, array('fill' => $n_main_color));
+            if (!($style == 'blk' && $rev)) {
+                $svg->addPath(self::HORIZ_N_R_FILL, array('fill' => $n_secondary_color));
+                $svg->addPath(self::HORIZ_N_SERIF, array('fill' => $n_secondary_color));
+            }
+            $svg->addPath(self::HORIZ_N_FILL, array('fill' => $n_main_color));
+            $svg->addPath(self::HORIZ_N_OUTLINE_R, array('fill' => $n_main_color));
+        } else if ($orient == 'v') {
+            switch ($template) {
+                case 'v_org':
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(12);
+                    $svg->setFontColor($main_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "org_first_line"), 100 - ($text_width / 2), 37);
                     break;
                 case 'v_org_2':
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "org_first_line"), 100 - ($main_text_width / 2), 37);
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(12);
+                    $svg->setFontColor($main_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "org_first_line"), 100 - ($text_width / 2), 37);
 
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_second_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "org_second_line"), 100 - ($secondary_text_width / 2), 48);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "org_second_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "org_second_line"), 100 - ($text_width / 2), 48);
                     break;
                 case 'v_org_subject':
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "org_first_line"), 100 - ($main_text_width / 2), 37);
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(12);
+                    $svg->setFontColor($main_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "org_first_line"), 100 - ($text_width / 2), 37);
 
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(8.125);
-                    $Svg->setFontColor($secondary_text_color);
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "subject_first_line"), 100 - ($secondary_text_width / 2), 55);
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(8.125);
+                    $svg->setFontColor($secondary_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "subject_first_line"), 100 - ($text_width / 2), 55);
                     break;
                 case 'v_student_org':
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "student_org_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "student_org_first_line"), 100 - ($main_text_width / 2), 37);
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(12);
+                    $svg->setFontColor($main_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "student_org_first_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "student_org_first_line"), 100 - ($text_width / 2), 37);
 
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(8.125);
-                    $Svg->setFontColor($secondary_text_color);
-                    $secondary_text_width = $Svg->textDimensions(self::RECOGNIZED_STUDENT_ORGANIZATION)[0];
-                    $Svg->addText(self::RECOGNIZED_STUDENT_ORGANIZATION, 100 - ($secondary_text_width / 2), 55);
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(8.125);
+                    $svg->setFontColor($secondary_text_color);
+                    $text_width = $svg->textDimensions(self::RECOGNIZED_STUDENT_ORGANIZATION)[0];
+                    $svg->addText(self::RECOGNIZED_STUDENT_ORGANIZATION, 100 - ($text_width / 2), 55);
                     break;
                 case 'v_org_subject_2':
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "org_first_line"), 100 - ($main_text_width / 2), 37);
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(12);
+                    $svg->setFontColor($main_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "org_first_line"), 100 - ($text_width / 2), 37);
 
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(8.125);
-                    $Svg->setFontColor($secondary_text_color);
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "subject_first_line"), 100 - ($secondary_text_width / 2), 55);
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(8.125);
+                    $svg->setFontColor($secondary_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "subject_first_line"), 100 - ($text_width / 2), 55);
 
-                    $third_width = $Svg->textDimensions($this->getLockupFields($lockup, "subject_second_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "subject_second_line"), 100 - ($third_width / 2), 64);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "subject_second_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "subject_second_line"), 100 - ($text_width / 2), 64);
                     break;
                 case 'v_org_2_subject':
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "org_first_line"), 100 - ($main_text_width / 2), 37);
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(12);
+                    $svg->setFontColor($main_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "org_first_line"), 100 - ($text_width / 2), 37);
 
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_second_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "org_second_line"), 100 - ($secondary_text_width / 2), 48);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "org_second_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "org_second_line"), 100 - ($text_width / 2), 48);
 
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(8.125);
-                    $Svg->setFontColor($secondary_text_color);
-                    $third_width = $Svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "subject_first_line"), 100 - ($third_width / 2), 66);
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(8.125);
+                    $svg->setFontColor($secondary_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "subject_first_line"), 100 - ($text_width / 2), 66);
                     break;
                 case 'v_org_2_subject_2':
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "org_first_line"), 100 - ($main_text_width / 2), 37);
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(12);
+                    $svg->setFontColor($main_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "org_first_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "org_first_line"), 100 - ($text_width / 2), 37);
 
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "org_second_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "org_second_line"), 100 - ($secondary_text_width / 2), 48);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "org_second_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "org_second_line"), 100 - ($text_width / 2), 48);
 
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(8.125);
-                    $Svg->setFontColor($secondary_text_color);
-                    $third_width = $Svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "subject_first_line"), 100 - ($third_width / 2), 61);
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(8.125);
+                    $svg->setFontColor($secondary_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "subject_first_line"), 100 - ($text_width / 2), 61);
 
-                    $fourth_width = $Svg->textDimensions($this->getLockupFields($lockup, "subject_second_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "subject_second_line"), 100 - ($fourth_width / 2), 70);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "subject_second_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "subject_second_line"), 100 - ($text_width / 2), 70);
                     break;
-                case 'v_student_org_2':
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "student_org_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "student_org_first_line"), 100 - ($main_text_width / 2), 37);
+	            case 'v_student_org_2':
+		            $svg->setFontSVG(self::TUNGSTEN);
+		            $svg->setLetterSpacing(0.05);
+		            $svg->setFontSize(12);
+		            $svg->setFontColor($main_text_color);
+		            $text_width = $svg->textDimensions($this->getLockupFields($lockup, "student_org_first_line"))[0];
+		            $svg->addText($this->getLockupFields($lockup, "student_org_first_line"), 100 - ($text_width / 2), 37);
 
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "student_org_second_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "student_org_second_line"), 100 - ($secondary_text_width / 2), 48);
+		            $text_width = $svg->textDimensions($this->getLockupFields($lockup, "student_org_second_line"))[0];
+		            $svg->addText($this->getLockupFields($lockup, "student_org_second_line"), 100 - ($text_width / 2), 48);
 
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(8.125);
-                    $Svg->setFontColor($secondary_text_color);
-                    $third_width = $Svg->textDimensions(self::RECOGNIZED_STUDENT_ORGANIZATION)[0];
-                    $Svg->addText(self::RECOGNIZED_STUDENT_ORGANIZATION, 100 - ($third_width / 2), 66);
-                    break;
+		            $svg->setFontSVG(self::MERCURY);
+		            $svg->setLetterSpacing(0);
+		            $svg->setFontSize(8.125);
+		            $svg->setFontColor($secondary_text_color);
+		            $text_width = $svg->textDimensions(self::RECOGNIZED_STUDENT_ORGANIZATION)[0];
+		            $svg->addText(self::RECOGNIZED_STUDENT_ORGANIZATION, 100 - ($text_width / 2), 66);
+		            break;
                 case 'v_acronym':
-                    $Svg->setFontSize(22);
-
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "acronym_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "acronym_first_line"), 100 - ($main_text_width / 2), 32);
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(22);
+                    $svg->setFontColor($main_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "acronym_first_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "acronym_first_line"), 100 - ($text_width / 2), 32);
                     break;
                 case 'v_social':
-                    $Svg->addPath(self::VERT_BACKGROUND, array('fill' => $n_secondary_color));
-                    
-                    $Svg->setFontSize(22);
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "acronym_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "acronym_first_line"), 100 - ($main_text_width / 2), 32);
+                    $svg->addPath(self::VERT_BACKGROUND, array('fill' => $n_secondary_color));
+
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(22);
+                    $svg->setFontColor($main_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "acronym_first_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "acronym_first_line"), 100 - ($text_width / 2), 32);
                     break;
                 case 'v_acronym_subject':
-                    $Svg->setFontSize(22);
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(22);
+                    $svg->setFontColor($main_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "acronym_first_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "acronym_first_line"), 100 - ($text_width / 2), 32);
 
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "acronym_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "acronym_first_line"), 100 - ($main_text_width / 2), 32);
-
-                    $Svg->setFontSize(16.25);
-                    $Svg->setFontColor($secondary_text_color);
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "acronym_subject"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "acronym_subject"), 100 - ($secondary_text_width / 2), 56.25);
+                    $svg->setFontSize(16.25);
+                    $svg->setFontColor($secondary_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "acronym_subject"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "acronym_subject"), 100 - ($text_width / 2), 56.25);
                     break;
                 case 'v_acronym_2_subject':
-                    $Svg->setFontSize(22);
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(22);
+                    $svg->setFontColor($main_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "acronym_first_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "acronym_first_line"), 100 - ($text_width / 2), 32);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "acronym_second_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "acronym_second_line"), 100 - ($text_width / 2), 52);
 
-                    $main_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "acronym_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "acronym_first_line"), 100 - ($main_text_width / 2), 32);
-
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "acronym_second_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "acronym_second_line"), 100 - ($secondary_text_width / 2), 52);
-
-                    $Svg->setFontSize(16.25);
-                    $Svg->setFontColor($secondary_text_color);
-                    $third_width = $Svg->textDimensions($this->getLockupFields($lockup, "acronym_subject"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "acronym_subject"), 100 - ($third_width / 2), 80);
+                    $svg->setFontSize(16.25);
+                    $svg->setFontColor($secondary_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "acronym_subject"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "acronym_subject"), 100 - ($text_width / 2), 80);
                     break;
                 case 'v_extension':
-                    $Svg->setFontSize(22);
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(22);
+                    $svg->setFontColor($main_text_color);
+                    $text_width = $svg->textDimensions('EXTENSION')[0];
+                    $svg->addText('EXTENSION', 100 - ($text_width / 2), 32);
 
-                    $main_text_width = $Svg->textDimensions('EXTENSION')[0];
-                    $Svg->addText('EXTENSION', 100 - ($main_text_width / 2), 32);
-
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(8.125);
-                    $Svg->setFontColor($secondary_text_color);
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "extension"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "extension"), 100 - ($secondary_text_width / 2), 60);
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(8.125);
+                    $svg->setFontColor($secondary_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "extension"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "extension"), 100 - ($text_width / 2), 60);
                     break;
                 case 'v_ncta':
-                    $Svg->setFontSize(22);
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(22);
+                    $svg->setFontColor($main_text_color);
+                    $text_width = $svg->textDimensions('NCTA')[0];
+                    $svg->addText('NCTA', 100 - ($text_width / 2), 32);
 
-                    $main_text_width = $Svg->textDimensions('NCTA')[0];
-                    $Svg->addText('NCTA', 100 - ($main_text_width / 2), 32);
-
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(8.125);
-                    $Svg->setFontColor($secondary_text_color);
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "subject_first_line"), 100 - ($secondary_text_width / 2), 60);
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(8.125);
+                    $svg->setFontColor($secondary_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "subject_first_line"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "subject_first_line"), 100 - ($text_width / 2), 60);
                     break;
                 case 'v_extension_4h':
-                    $Svg->setFontSize(28);
+                    $svg->setFontSVG(self::TUNGSTEN);
+                    $svg->setLetterSpacing(0.05);
+                    $svg->setFontSize(28);
+                    $svg->setFontColor($main_text_color);
+                    $text_width = $svg->textDimensions('EXTENSION')[0];
+                    $svg->addText('EXTENSION', 100 - ($text_width / 2), 32);
 
-                    $main_text_width = $Svg->textDimensions('EXTENSION')[0];
-                    $Svg->addText('EXTENSION', 100 - ($main_text_width / 2), 32);
-
-                    $Svg->setFontSVG(self::MERCURY);
-                    $Svg->setLetterSpacing(0);
-                    $Svg->setFontSize(8.125);
-                    $Svg->setFontColor($secondary_text_color);
-                    $secondary_text_width = $Svg->textDimensions($this->getLockupFields($lockup, "extension"))[0];
-                    $Svg->addText($this->getLockupFields($lockup, "extension"), 100 - ($secondary_text_width / 2), 66);
+                    $svg->setFontSVG(self::MERCURY);
+                    $svg->setLetterSpacing(0);
+                    $svg->setFontSize(8.125);
+                    $svg->setFontColor($secondary_text_color);
+                    $text_width = $svg->textDimensions($this->getLockupFields($lockup, "extension"))[0];
+                    $svg->addText($this->getLockupFields($lockup, "extension"), 100 - ($text_width / 2), 66);
+                    break;
             }
 
-
-            # set the SVG dimensions
-
-            $max_width = max($main_text_width, $secondary_text_width, $third_width, $fourth_width);
-
-            # for width
-            switch ($template) {
-                case 'v_social':
-                    $width = 100;
-                    $x = 50;
-                    break;
-                case 'v_extension_4h':
-                    if ($preview) {
-                        if ($max_width > 90) {
-                            $x = 50 - max(15, ($max_width / 3));
-                            $width = 100 + ($max_width/2);
-                        } else {
-                            $x = 50;
-                            $width = 100;
-                        }
-                    }
-                    break;
-                default:
-                    if ($preview) {
-                        if ($max_width > 45) {
-                            if ($orient == "h") {
-                                $x = 90 - ($max_width / 2);
-                                $width = 20 + ($max_width);
-                            } else {
-                                $x = 80 - ($max_width / 2);
-                                $width = 40 + ($max_width);
-                            }
-                        } else {
-                            if ($orient == "h") {
-                            $x = 80;
-                            $width = 40;
-                            } else {
-                                $x = 70;
-                                $width = 60;
-                            }
-                        }
-                    }
-            }
-
-            #for height
+            $height = 80;
+            $width = 200;
+            $x = 0;
+            $y = 0;
             switch ($template) {
                 case 'v_org_2_subject_2':
                     $height = 88;
@@ -567,64 +678,56 @@ class SvgGenerator
                     break;
                 case 'v_social':
                     $height = 100;
+                    $width = 100;
                     $y = -20;
+                    $x = 50;
                     break;
             }
 
-            #add the logos
+            $svg->addAttribute('viewBox', $x . " " .  $y . " " . ($width) . " " . ($height));
+            $height = $height;
+            $width = $width;
+            if (!$preview) {
+                $svg->addAttribute('height', $height);
+                $svg->addAttribute('width', $width);
+            }
+
             if ($template == 'v_extension_4h') {
-                $Svg->addPath(self::LEFT_N_R_CIRCLE, array('fill' => $n_main_color, 'transform' => 'translate(50.5 0.1)'));
-                $Svg->addPath(self::LEFT_N_OUTLINE, array('fill' => $n_main_color, 'transform' => 'translate(50.5 0.1)'));
-                $Svg->addPath(self::LEFT_N_FILL, array('fill' => $n_main_color, 'transform' => 'translate(56, 0)'));
-                $Svg->addPath(self::LEFT_N_OUTLINE_R, array('fill' => $n_main_color, 'transform' => 'translate(50.5 0.1)'));
-
-                $Svg->addPath(self::RIGHT_CLOVER_FILL, array('fill' => $clover_color, 'transform' => 'translate(144.6758,24.75) rotate(180) scale(-1,1)'));
-                $Svg->addPath(self::RIGHT_CLOVER_LETTER_1, array('fill' => $clover_color, 'transform' => 'translate(140.91,34.26) rotate(180) scale(-1,1)'));
-                $Svg->addPath(self::RIGHT_CLOVER_LETTER_2, array('fill' => $clover_color, 'transform' => 'translate(140.737,33.5) rotate(180) scale(-1,1)'));
-                $Svg->addPath(self::RIGHT_CLOVER_LETTER_3, array('fill' => $clover_color, 'transform' => 'translate(141.0319,32.28) rotate(180) scale(-1,1)'));
-                $Svg->addPath(self::RIGHT_CLOVER_LETTER_4, array('fill' => $clover_color, 'transform' => 'translate(142.26,31.9) rotate(180) scale(-1,1)'));
-                $Svg->addPath(self::RIGHT_CLOVER_LETTER_5, array('fill' => $clover_color, 'transform' => 'translate(143.3116,30.35) rotate(180) scale(-1,1)'));
-                $Svg->addPath(self::RIGHT_CLOVER_LETTER_6, array('fill' => $clover_color, 'transform' => 'translate(143.4054,29.43) rotate(180) scale(-1,1)'));
-                $Svg->addPath(self::RIGHT_CLOVER_LETTER_7, array('fill' => $clover_color, 'transform' => 'translate(143.971,28.3368) rotate(180) scale(-1,1)'));
-                $Svg->addPath(self::RIGHT_CLOVER_LETTER_8, array('fill' => $clover_color, 'transform' => 'translate(144.4453,28.0718) rotate(180) scale(-1,1)'));
-                $Svg->addPath(self::RIGHT_CLOVER_H_1, array('fill' => $clover_h_color, 'transform' => 'translate(56, 0)'));
-                $Svg->addPath(self::RIGHT_CLOVER_H_2, array('fill' => $clover_h_color, 'transform' => 'translate(56, 0)'));
-                $Svg->addPath(self::RIGHT_CLOVER_H_3, array('fill' => $clover_h_color, 'transform' => 'translate(56, 0)'));
-                $Svg->addPath(self::RIGHT_CLOVER_H_4, array('fill' => $clover_h_color, 'transform' => 'translate(56, 0)'));
-
-                $Svg->addPath(self::CENTER_DIVIDER, array('fill' => $secondary_text_color, 'transform' => 'translate(50.5 0.1)', 'stroke' => $secondary_text_color, 'stroke-width' => '0.5pt'));
-
+                $svg->addPath(self::LEFT_N_R_CIRCLE, array('fill' => $n_main_color, 'transform' => 'translate(50.5 0.1)'));
                 if (!($style == 'blk' && $rev)) {
-                    $Svg->addPath(self::LEFT_N_R_FILL, array('fill' => $n_secondary_color, 'transform' => 'translate(50.5 0.1)'));
-                    $Svg->addPath(self::LEFT_N_SERIF, array('fill' => $n_secondary_color, 'transform' => 'translate(50.5 0.1)'));
+                    $svg->addPath(self::LEFT_N_R_FILL, array('fill' => $n_secondary_color, 'transform' => 'translate(50.5 0.1)'));
+                    $svg->addPath(self::LEFT_N_SERIF, array('fill' => $n_secondary_color, 'transform' => 'translate(50.5 0.1)'));
                 }
+                $svg->addPath(self::LEFT_N_OUTLINE, array('fill' => $n_main_color, 'transform' => 'translate(50.5 0.1)'));
+                $svg->addPath(self::LEFT_N_FILL, array('fill' => $n_main_color, 'transform' => 'translate(56, 0)'));
+                $svg->addPath(self::LEFT_N_OUTLINE_R, array('fill' => $n_main_color, 'transform' => 'translate(50.5 0.1)'));
+
+                $svg->addPath(self::RIGHT_CLOVER_FILL, array('fill' => $clover_color, 'transform' => 'translate(144.6758,24.75) rotate(180) scale(-1,1)'));
+                $svg->addPath(self::RIGHT_CLOVER_LETTER_1, array('fill' => $clover_color, 'transform' => 'translate(140.91,34.26) rotate(180) scale(-1,1)'));
+                $svg->addPath(self::RIGHT_CLOVER_LETTER_2, array('fill' => $clover_color, 'transform' => 'translate(140.737,33.5) rotate(180) scale(-1,1)'));
+                $svg->addPath(self::RIGHT_CLOVER_LETTER_3, array('fill' => $clover_color, 'transform' => 'translate(141.0319,32.28) rotate(180) scale(-1,1)'));
+                $svg->addPath(self::RIGHT_CLOVER_LETTER_4, array('fill' => $clover_color, 'transform' => 'translate(142.26,31.9) rotate(180) scale(-1,1)'));
+                $svg->addPath(self::RIGHT_CLOVER_LETTER_5, array('fill' => $clover_color, 'transform' => 'translate(143.3116,30.35) rotate(180) scale(-1,1)'));
+                $svg->addPath(self::RIGHT_CLOVER_LETTER_6, array('fill' => $clover_color, 'transform' => 'translate(143.4054,29.43) rotate(180) scale(-1,1)'));
+                $svg->addPath(self::RIGHT_CLOVER_LETTER_7, array('fill' => $clover_color, 'transform' => 'translate(143.971,28.3368) rotate(180) scale(-1,1)'));
+                $svg->addPath(self::RIGHT_CLOVER_LETTER_8, array('fill' => $clover_color, 'transform' => 'translate(144.4453,28.0718) rotate(180) scale(-1,1)'));
+                $svg->addPath(self::RIGHT_CLOVER_H_1, array('fill' => $clover_h_color, 'transform' => 'translate(56, 0)'));
+                $svg->addPath(self::RIGHT_CLOVER_H_2, array('fill' => $clover_h_color, 'transform' => 'translate(56, 0)'));
+                $svg->addPath(self::RIGHT_CLOVER_H_3, array('fill' => $clover_h_color, 'transform' => 'translate(56, 0)'));
+                $svg->addPath(self::RIGHT_CLOVER_H_4, array('fill' => $clover_h_color, 'transform' => 'translate(56, 0)'));
+
+                $svg->addPath(self::CENTER_DIVIDER, array('fill' => $secondary_text_color, 'transform' => 'translate(50.5 0.1)', 'stroke' => $secondary_text_color, 'stroke-width' => '0.5pt'));
             } else {
-                $Svg->addPath(self::VERT_N_R_CIRCLE, array('fill' => $n_main_color));
-                $Svg->addPath(self::VERT_N_FILL, array('fill' => $n_main_color));
-                $Svg->addPath(self::VERT_N_OUTLINE_R, array('fill' => $n_main_color));
-
+                $svg->addPath(self::VERT_N_R_CIRCLE, array('fill' => $n_main_color));
                 if (!($style == 'blk' && $rev)) {
-                    $Svg->addPath(self::VERT_N_R_FILL, array('fill' => $n_secondary_color));
-                    $Svg->addPath(self::VERT_N_SERIF, array('fill' => $n_secondary_color));
+                    $svg->addPath(self::VERT_N_R_FILL, array('fill' => $n_secondary_color));
+                    $svg->addPath(self::VERT_N_SERIF, array('fill' => $n_secondary_color));
                 }
+                $svg->addPath(self::VERT_N_FILL, array('fill' => $n_main_color));
+                $svg->addPath(self::VERT_N_OUTLINE_R, array('fill' => $n_main_color));
             }
         }
-
-        #add attributes
-        $Svg->addAttribute('viewBox', $x . " " .  $y . " " . ($width) . " " . ($height));
-
-        if (!$preview) {
-            $Svg->addAttribute('height', $height);
-            $Svg->addAttribute('width', $width);
-        }
-
-
-        if ($preview) {
-            $Svg->addAttribute("class", "preview");
-        }
-
-        #generate the SVG
-        $finalSVG = $Svg->asXML();
-        return $finalSVG;
+        return $svg->asXML();
     }
+
 }

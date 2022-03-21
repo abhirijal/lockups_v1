@@ -11,7 +11,6 @@ use App\Entity\LockupsFields;
 use App\Entity\LockupTemplates;
 use App\Entity\LockupTemplatesCategories;
 use App\Entity\LockupTemplatesFields;
-use App\Entity\Svg;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Response;
@@ -136,8 +135,9 @@ class IndexController extends BaseController
     /**
      * @Route("/lockups/delete/", name="deleteLockups", methods={"POST"})
      */
-    public function deleteLockups(ManagerRegistry $doctrine, Request $request): RedirectResponse
+    public function deleteLockups(ManagerRegistry $doctrine, Request $request, Auth $auth): RedirectResponse
     {
+        $auth->requireAuth();
         $id = $request->request->get('id');
         $lockups = $doctrine->getRepository(Lockups::class)->find($id);
         $lockup_fields = $doctrine->getRepository(LockupsFields::class)->findAll($lockups->getId());
@@ -154,14 +154,23 @@ class IndexController extends BaseController
     /**
      * @Route("/lockups/preview/{id}", name="previewLockups")
      */
-    public function previewLockups(int $id, ManagerRegistry $doctrine): Response
+    public function previewLockups(int $id, ManagerRegistry $doctrine, Auth $auth): Response
     {
+        $auth->requireAuth();
         $lockup = $doctrine->getRepository(Lockups::class)->find($id);
         return $this->render('base.html.twig', [
             'page_template' => "previewLockups.html.twig",
             'page_name' => "ManageLockups",
             'SVG' => $lockup
         ]);
+    }
+    /**
+     * @Route("/logout", name="logout")
+     */
+    public function logout(Auth $auth): Response
+    {
+        $auth->logout();
+        return $this->redirectToRoute('homePage', [], 302);
     }
     /**
      * @Route("/lockups/library", name="lockupsLibrary")

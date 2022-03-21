@@ -57,12 +57,12 @@ class LockupsGenerator
         $array = $this->fetchLockupDetails($id);
         if ($array["h"] != null)
         {
-            $horizontal = $this->SvgGenerator->createLockup($array["h"]->getSlug(), $array['fields'], 'h', 'RGB', false, true);
+            $horizontal = $this->SvgGenerator->createLockup($array["h"]->getSlug(), $array['fields'], 'h', '4c', false, true);
             $lockups->setPreviewH($horizontal);
         }
         if ($array["v"] != null)
         {
-            $vertical = $this->SvgGenerator->createLockup($array["v"]->getSlug(), $array['fields'], 'v', 'RGB', false, true);
+            $vertical = $this->SvgGenerator->createLockup($array["v"]->getSlug(), $array['fields'], 'v', '4c', false, true);
             $lockups->setPreviewV($vertical);
         }
         $this->doctrine->getManager()->persist($lockups);

@@ -40,7 +40,9 @@ class Auth
     }
 
     public function logout() : bool {
-        phpCAS::logoutWithRedirectService($this->root_url);
+        if (phpCAS::checkAuthentication()) {
+            phpCAS::logoutWithRedirectService($this->root_url);
+        }
         return true;
     }
 
