@@ -26,7 +26,6 @@ class Auth
             phpCAS::setNoCasServerValidation();
             phpCAS::setVerbose(true);
         }
-
     }
 
     public function requireAuth() : bool
@@ -117,5 +116,21 @@ class Auth
         return $info;
     }
 
+    public function isApprover() : bool {
+        $user = $this->getUser();
+        if ($user->getRole() == "approver") {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
+    public function isCreative() : bool {
+        $user = $this->getUser();
+        if ($user->getRole() == "creative") {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

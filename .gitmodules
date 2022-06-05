@@ -1,6 +1,0 @@
-[submodule "wdn"]
-	path = wdn
-	url = https://github.com/unl/wdntemplates/
-[submodule "wdntemplates"]
-	path = wdntemplates
-	url = https://github.com/unl/wdntemplates
