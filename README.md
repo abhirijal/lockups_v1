@@ -1,3 +1,7 @@
+![lcokups homepage](https://user-images.githubusercontent.com/29809542/175645677-c835ec32-12a6-4016-886a-892a1ff97f51.png)
+
+Generates lockups in 6 file formats (.png, .svg, .jpg, .eps, .ai, .pdf) in 3 color formats (RGB, CMYK, Pantone).
+
 ** Installation (Devlopment) **
 ------------------
 
@@ -16,3 +20,10 @@ Install Lockup Factory
 8. Visit https://lockups-local.unl.edu:8000/
 
 Note: If you're using Apache, you need to give write permission to the `/public/lockups` folder.
+
+** Workflow **
+------------------
+
+- Client selects the lockup template, enters the details and submits it for approval.
+- The approver and creative check the lockup and approve it/disapprove it/just leave feedback.
+- If the lockup if approved, the application generates over 30 versions of the lockups.
